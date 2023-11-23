@@ -32,7 +32,7 @@ function showLoginForm(loginMessage = "",Email = "",EmailError="",passwordError 
     <hr>
     <button class="form-control btn-info" id="createProfilCmd">Nouveau compte</button>
     </div`));
-    //UpdateHeader("Connexion", "login");
+    updateHeader("Connexion", "login");
     $('#createProfilCmd').on("click", function () {
         showInscriptionForm();
     });
@@ -134,14 +134,111 @@ function renderAnonymousMenu() {
     $("#contextualMenu").empty();
     $("#contextualMenu").append(
         $(`
-            <div class="dropdown-item" id="loginCmd">
-            <i class="menuIcon fa fa-sign-in mx-2"></i> Connexion
-            </div>
-            <div class="dropdown-divider"></div>
+            <span class="dropdown-item" id="loginCmd">
+                <i class="menuIcon fa fa-sign-in mx-2"></i> Connexion
+            </span>
 
-            <div class="dropdown-item" id="aboutCmd">
+            <div class="dropdown-divider"></div>
+            <span class="dropdown-item" id="aboutCmd">
                 <i class="menuIcon fa fa-info-circle mx-2"></i> À propos...
-            </div>
+            </span>
+        `)
+    ); 
+}
+
+function renderUserMenu() {
+    $("#contextualMenu").empty();
+    $("#contextualMenu").append(
+        $(`
+            <span class="dropdown-item" id="logoutCmd">
+                <i class="menuIcon fa fa-sign-out mx-2"></i> Déconnexion
+            </span>
+            <span class="dropdown-item" id="editProfilCmd">
+                <i class="menuIcon fa fa-user-edit mx-2"></i> Modifier votre profil
+            </span>
+
+            <div class="dropdown-divider"></div>
+            <span class="dropdown-item" id="listPhotosMenuCmd">
+                <i class="menuIcon fa fa-image mx-2"></i> Liste des photos
+            </span>
+
+            <div class="dropdown-divider"></div>
+            <span class="dropdown-item" id="sortByDateCmd">
+                <i class="menuIcon fa fa-check mx-2"></i>
+                <i class="menuIcon fa fa-calendar mx-2"></i>
+                Photos par date de création
+            </span>
+            <span class="dropdown-item" id="sortByOwnersCmd">
+                <i class="menuIcon fa fa-fw mx-2"></i>
+                <i class="menuIcon fa fa-users mx-2"></i>
+                Photos par créateur
+            </span>
+            <span class="dropdown-item" id="sortByLikesCmd">
+                <i class="menuIcon fa fa-fw mx-2"></i>
+                <i class="menuIcon fa fa-user mx-2"></i>
+                Photos les plus aiméés
+            </span>
+            <span class="dropdown-item" id="ownerOnlyCmd">
+                <i class="menuIcon fa fa-fw mx-2"></i>
+                <i class="menuIcon fa fa-user mx-2"></i>
+                Mes photos
+            </span>
+
+            <div class="dropdown-divider"></div>
+            <span class="dropdown-item" id="aboutCmd">
+                <i class="menuIcon fa fa-info-circle mx-2"></i> À propos...
+            </span>
+        `)
+    ); 
+}
+
+function renderAdminMenu() {
+    $("#contextualMenu").empty();
+    $("#contextualMenu").append(
+        $(`
+            <span class="dropdown-item" id="manageUserCm">
+                <i class="menuIcon fas fa-user-cog mx-2"></i>
+                Gestion des usagers
+            </span>
+
+            <div class="dropdown-divider"></div>
+            <span class="dropdown-item" id="logoutCmd">
+                <i class="menuIcon fa fa-sign-out mx-2"></i> Déconnexion
+            </span>
+            <span class="dropdown-item" id="editProfilCmd">
+                <i class="menuIcon fa fa-user-edit mx-2"></i> Modifier votre profil
+            </span>
+            <div class="dropdown-divider"></div>
+            <span class="dropdown-item" id="listPhotosMenuCmd">
+                <i class="menuIcon fa fa-image mx-2"></i> Liste des photos
+            </span>
+
+            <div class="dropdown-divider"></div>
+            <span class="dropdown-item" id="sortByDateCmd">
+                <i class="menuIcon fa fa-check mx-2"></i>
+                <i class="menuIcon fa fa-calendar mx-2"></i>
+                Photos par date de création
+            </span>
+            <span class="dropdown-item" id="sortByOwnersCmd">
+                <i class="menuIcon fa fa-fw mx-2"></i>
+                <i class="menuIcon fa fa-users mx-2"></i>
+                Photos par créateur
+            </span>
+            <span class="dropdown-item" id="sortByLikesCmd">
+                <i class="menuIcon fa fa-fw mx-2"></i>
+                <i class="menuIcon fa fa-user mx-2"></i>
+                Photos les plus aiméés
+            </span>
+            <span class="dropdown-item" id="ownerOnlyCmd">
+                <i class="menuIcon fa fa-fw mx-2"></i>
+                <i class="menuIcon fa fa-user mx-2"></i>
+                Mes photos
+            </span>
+
+            <div class="dropdown-divider"></div>
+            <span class="dropdown-item" id="aboutCmd">
+                <i class="menuIcon fa fa-info-circle mx-2"></i> À propos...
+            </span>
         `)
     ); 
 }
@@ -169,8 +266,16 @@ function updateHeader(headerName) {
         `)
     );
 
-    if (sessionStorage.getItem('user') == null) {
+    let user = API.retrieveLoggedUser();
+
+    if (user == null) {
         renderAnonymousMenu();
+    }
+    else if (user.Authorizations.readAccess == 2 && user.Authorizations.writeAccess == 2) {
+        renderAdminMenu();
+    }
+    else {
+        renderUserMenu();
     }
     /*$("#header").append(
        $(`
@@ -198,7 +303,7 @@ function renderAbout() {
     timeout();
     saveContentScrollPosition();
     eraseContent();
-    UpdateHeader("À propos...", "about");
+    updateHeader("À propos...", "about");
 
     $("#content").append(
         $(`
