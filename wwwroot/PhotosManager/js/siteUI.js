@@ -36,6 +36,13 @@ function showLoginForm(loginMessage = "",Email = "",EmailError="",passwordError 
     $('#createProfilCmd').on("click", function () {
         showInscriptionForm();
     });
+    $('#loginForm').on("submit", function (e) {
+
+        e.preventDefault();
+        console.log($("[name='Email']").val());
+        console.log($("[name='Password']").val());
+        API.login($("[name='Email']").val(),$("[name='Password']").val())
+    });
 }
 function showInscriptionForm()
 {
