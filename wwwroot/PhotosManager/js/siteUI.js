@@ -32,7 +32,7 @@ function showLoginForm(loginMessage = "",Email = "",EmailError="",passwordError 
     <hr>
     <button class="form-control btn-info" id="createProfilCmd">Nouveau compte</button>
     </div`));
-    UpdateHeader("Connexion", "login");
+    updateHeader("Connexion", "login");
 }
 function showWaitingGif() {
     eraseContent();
@@ -47,9 +47,70 @@ function saveContentScrollPosition() {
 function restoreContentScrollPosition() {
     $("#content")[0].scrollTop = contentScrollPosition;
 }
-function updateHeader() {
-    //todo
+
+function renderAnonymousMenu() {
+    $("#contextualMenu").empty();
+    $("#contextualMenu").append(
+        $(`
+            <div class="dropdown-item" id="loginCmd">
+            <i class="menuIcon fa fa-sign-in mx-2"></i> Connexion
+            </div>
+            <div class="dropdown-divider"></div>
+
+            <div class="dropdown-item" id="aboutCmd">
+                <i class="menuIcon fa fa-info-circle mx-2"></i> À propos...
+            </div>
+        `)
+    ); 
+}
+
+function eraseHeader() {
     $("#header").empty();
+}
+
+function updateHeader(headerName) {
+    //todo
+    eraseHeader();
+    $("#header").append(
+        $(`
+            <div class="headerMenusContainer">
+                <span>&nbsp;</span> <!--filler-->
+                <div class="dropdown ms-auto dropdownLayout">
+                    <!-- Articles de menu -->
+                    <div data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="cmdIcon fa fa-ellipsis-vertical"></i>
+                </div>
+                <div class="dropdown-menu noselect" id="contextualMenu">
+                </div>
+                </div>
+            </div>
+        `)
+    );
+
+    if (sessionStorage.getItem('user') == null) {
+        renderAnonymousMenu();
+    }
+    /*$("#header").append(
+       $(`
+        <span title="${headerName}" id="listPhotosCmd">
+            <img src="images/PhotoCloudLogo.png" class="appLogo">
+        </span>
+        <span class="viewTitle">${headerName}
+            <div class="cmdIcon fa fa-plus" id="newPhotoCmd" title="Ajouter une photo"></div>
+        </span>
+        <div class="headerMenusContainer">
+            <span>&nbsp;</span> <!--filler-->
+            <i title="Modifier votre profil">
+                <div class="UserAvatarSmall" userid="${loggedUser.Id}" id="editProfilCmd"
+                    style="background-image:url('${loggedUser.Avatar}')"
+                    title="Nicolas Chourot"></div>
+            </i>
+            <div class="dropdown ms-auto dropdownLayout">
+                <!-- Articles de menu -->
+            </div>
+        </div>
+       `));
+       */
 }
 function renderAbout() {
     timeout();
