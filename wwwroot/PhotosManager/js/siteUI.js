@@ -16,6 +16,7 @@ function restoreContentScrollPosition() {
 }
 function updateHeader() {
     //todo
+    $("#header").empty();
 }
 function renderAbout() {
     timeout();
