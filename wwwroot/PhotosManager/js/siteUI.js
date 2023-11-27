@@ -247,11 +247,17 @@ function eraseHeader() {
     $("#header").empty();
 }
 
-function updateHeader(headerName) {
+function updateHeader(headerName, menu) {
     //todo
     eraseHeader();
     $("#header").append(
         $(`
+            <span title=${headerName} id="listPhotosCmd">
+                <img src="images/PhotoCloudLogo.png" class="appLogo">
+            </span>
+            <span class="viewTitle">${headerName}
+                <div class="cmdIcon fa fa-plus" id="newPhotoCmd" title="Ajouter une photo"></div>
+            </span>        
             <div class="headerMenusContainer">
                 <span>&nbsp;</span> <!--filler-->
                 <div class="dropdown ms-auto dropdownLayout">
@@ -269,6 +275,7 @@ function updateHeader(headerName) {
     let user = API.retrieveLoggedUser();
 
     if (user == null) {
+        //renderUserMenu();
         renderAnonymousMenu();
     }
     else if (user.Authorizations.readAccess == 2 && user.Authorizations.writeAccess == 2) {
