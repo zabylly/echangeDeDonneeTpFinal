@@ -5,6 +5,14 @@ init_UI();
 function init_UI() {
     showLoginForm();
 }
+function login(credential)
+{
+    let loginMessage = "";
+    let EmailError = "";
+    let passwordError = "";
+    API.login($("[name='Email']").val(),$("[name='Password']").val())
+    console.log(credential);
+}
 function showLoginForm(loginMessage = "",Email = "",EmailError="",passwordError ="")
 {
     eraseContent();
@@ -39,10 +47,9 @@ function showLoginForm(loginMessage = "",Email = "",EmailError="",passwordError 
     $('#loginForm').on("submit", function (e) {
 
         e.preventDefault();
-        console.log($("[name='Email']").val());
-        console.log($("[name='Password']").val());
-        API.login($("[name='Email']").val(),$("[name='Password']").val())
-        updateHeader("Connecté", "connected");
+        login(e);
+        //API.login($("[name='Email']").val(),$("[name='Password']").val())
+        //updateHeader("Connecté", "connected");
     });
 }
 function showInscriptionForm()
