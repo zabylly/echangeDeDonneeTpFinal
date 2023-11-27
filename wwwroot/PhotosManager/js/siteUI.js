@@ -42,11 +42,13 @@ function showLoginForm(loginMessage = "",Email = "",EmailError="",passwordError 
         console.log($("[name='Email']").val());
         console.log($("[name='Password']").val());
         API.login($("[name='Email']").val(),$("[name='Password']").val())
+        updateHeader("Connecté", "connected");
     });
 }
 function showInscriptionForm()
 {
     eraseContent();
+    updateHeader("Inscription", "login");
     $("#content").append($(`<form class="form" id="createProfilForm"'>
     <fieldset>
     <legend>Adresse ce courriel</legend>
