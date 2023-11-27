@@ -20,7 +20,7 @@ function showLoginForm(loginMessage = "",Email = "",EmailError="",passwordError 
     <form class="form" id="loginForm">
     <input type='email'
     name='Email'
-    class="form-control"
+    class="form-control Email"
     required
     RequireMessage = 'Veuillez entrer votre courriel'
     InvalidMessage = 'Courriel invalide'
@@ -121,6 +121,14 @@ function showInscriptionForm()
     <div class="cancel">
     <button class="form-control btn-secondary" id="abortCmd">Annuler</button>
     </div>`));
+
+    initFormValidation();
+    initImageUploaders();
+
+    $("#createProfilForm").on("submit", function() {
+        
+    });
+
     $('#abortCmd').on("click", function () {
         showLoginForm();
     });
@@ -256,12 +264,13 @@ function eraseHeader() {
     $("#header").empty();
 }
 
+//menu : le menu change selon la page
 function updateHeader(headerName, menu) {
     //todo
     eraseHeader();
     $("#header").append(
         $(`
-            <span title=${headerName} id="listPhotosCmd">
+            <span title="Liste des photos" id="listPhotosCmd">
                 <img src="images/PhotoCloudLogo.png" class="appLogo">
             </span>
             <span class="viewTitle">${headerName}
