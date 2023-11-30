@@ -43,7 +43,7 @@ function showLoginForm(loginMessage = "",email = "",emailError="",passwordError 
     <form class="form" id="loginForm">
     <input type='email'
     name='Email'
-    class="form-control"
+    class="form-control Email"
     required
     RequireMessage = 'Veuillez entrer votre courriel'
     InvalidMessage = 'Courriel invalide'
@@ -150,6 +150,14 @@ function showInscriptionForm()
     <div class="cancel">
     <button class="form-control btn-secondary" id="abortCmd">Annuler</button>
     </div>`));
+
+    initFormValidation();
+    initImageUploaders();
+
+    $("#createProfilForm").on("submit", function() {
+        
+    });
+
     $('#abortCmd').on("click", function () {
         showLoginForm();
     });
@@ -285,12 +293,13 @@ function eraseHeader() {
     $("#header").empty();
 }
 
+//menu : le menu change selon la page
 function updateHeader(headerName, menu) {
     //todo
     eraseHeader();
     $("#header").append(
         $(`
-            <span title=${headerName} id="listPhotosCmd">
+            <span title="Liste des photos" id="listPhotosCmd">
                 <img src="images/PhotoCloudLogo.png" class="appLogo">
             </span>
             <span class="viewTitle">${headerName}
@@ -301,8 +310,8 @@ function updateHeader(headerName, menu) {
                 <div class="dropdown ms-auto dropdownLayout">
                     <!-- Articles de menu -->
                     <div data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="cmdIcon fa fa-ellipsis-vertical"></i>
-                </div>
+                        <i class="cmdIcon fa fa-ellipsis-vertical"></i>
+                    </div>
                 <div class="dropdown-menu noselect" id="contextualMenu">
                 </div>
                 </div>
@@ -313,7 +322,6 @@ function updateHeader(headerName, menu) {
     let user = API.retrieveLoggedUser();
 
     if (user == null) {
-        //renderUserMenu();
         renderAnonymousMenu();
     }
     else if (user.Authorizations.readAccess == 2 && user.Authorizations.writeAccess == 2) {
@@ -322,27 +330,6 @@ function updateHeader(headerName, menu) {
     else {
         renderUserMenu();
     }
-    /*$("#header").append(
-       $(`
-        <span title="${headerName}" id="listPhotosCmd">
-            <img src="images/PhotoCloudLogo.png" class="appLogo">
-        </span>
-        <span class="viewTitle">${headerName}
-            <div class="cmdIcon fa fa-plus" id="newPhotoCmd" title="Ajouter une photo"></div>
-        </span>
-        <div class="headerMenusContainer">
-            <span>&nbsp;</span> <!--filler-->
-            <i title="Modifier votre profil">
-                <div class="UserAvatarSmall" userid="${loggedUser.Id}" id="editProfilCmd"
-                    style="background-image:url('${loggedUser.Avatar}')"
-                    title="Nicolas Chourot"></div>
-            </i>
-            <div class="dropdown ms-auto dropdownLayout">
-                <!-- Articles de menu -->
-            </div>
-        </div>
-       `));
-       */
 }
 function renderAbout() {
     timeout();
