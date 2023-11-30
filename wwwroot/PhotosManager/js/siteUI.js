@@ -5,15 +5,38 @@ init_UI();
 function init_UI() {
     showLoginForm();
 }
-function login(credential)
+async function login(credential)
 {
+    let email = $(credential.target.Email).val();
     let loginMessage = "";
-    let EmailError = "";
+    let emailError = "";
     let passwordError = "";
-    API.login($("[name='Email']").val(),$("[name='Password']").val())
-    console.log(credential);
+    let isValid = true;
+    if(await API.login(email,$(credential.target.Password).val()));
+    {
+        if(API.currentStatus == 481)
+        {
+            emailError = "Courriel introuvable";
+            isValid = false;
+        }
+        if(API.currentStatus == 482)
+        {
+            passwordError = "Mot de passe incorrect";
+            isValid = false;
+        }
+        if(isValid)
+        {
+            showMainPage();
+        }
+        else
+        {
+            showLoginForm(loginMessage,email,emailError,passwordError);
+        }
+    }
+
+    
 }
-function showLoginForm(loginMessage = "",Email = "",EmailError="",passwordError ="")
+function showLoginForm(loginMessage = "",email = "",emailError="",passwordError ="")
 {
     eraseContent();
     $("#content").append($(`<h3>${loginMessage}</h3>
@@ -25,8 +48,8 @@ function showLoginForm(loginMessage = "",Email = "",EmailError="",passwordError 
     RequireMessage = 'Veuillez entrer votre courriel'
     InvalidMessage = 'Courriel invalide'
     placeholder="adresse de courriel"
-    value='${Email}'>
-    <span style='color:red'>${EmailError}</span>
+    value='${email}'>
+    <span style='color:red'>${emailError}</span>
     <input type='password'
     name='Password'
     placeholder='Mot de passe'
@@ -52,10 +75,16 @@ function showLoginForm(loginMessage = "",Email = "",EmailError="",passwordError 
         //updateHeader("Connecté", "connected");
     });
 }
-function showInscriptionForm()
+function showMainPage()
 {
     eraseContent();
     updateHeader("Inscription", "login");
+    updateHeader("Connecté", "connected");
+    $("#content").append($(`<h2>Vous etes connecté</h2>`));
+}
+function showInscriptionForm()
+{
+    eraseContent();
     $("#content").append($(`<form class="form" id="createProfilForm"'>
     <fieldset>
     <legend>Adresse ce courriel</legend>
