@@ -1,9 +1,19 @@
+
+initTimeout(20,()=>{
+    logout("Votre session est expirée. Veillez vous reconnecter")
+ });   
 let contentScrollPosition = 0;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Views rendering
 init_UI();
 function init_UI() {
     showLoginForm();
+}
+function logout(logoutMessage)
+{
+    API.logout();
+    showLoginForm(logoutMessage);
+    noTimeout();
 }
 async function login(credential)
 {
@@ -15,13 +25,15 @@ async function login(credential)
     let userToken = await API.login(email,$(credential.target.Password).val());
     if(userToken)
     {
+        if(userToken.VerifyCode == "unverified")
+        {
+            showVerifyEmail();
+        }
+        else
+        {
+            showMainPage(); 
+        }
 
-        showMainPage(); 
-        initTimeout(20,()=>{
-           API.logout();
-           showLoginForm("Vous avez été déconnecté");
-           noTimeout();
-        });   
         startCountdown();    
     }
     else
@@ -353,6 +365,9 @@ function renderUserMenu() {
             </span>
         `)
     ); 
+    $('#logoutCmd').on("click", function () {
+        logout("Vous êtes déconnecté");
+    });
 }
 
 function renderAdminMenu() {
