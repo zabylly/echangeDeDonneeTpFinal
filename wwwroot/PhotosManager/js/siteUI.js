@@ -117,6 +117,38 @@ function newContact() {
     return contact;
 }
 
+function showVerifyEmail()  {
+    updateHeader("Vérification", "verify");
+    eraseContent();
+
+    let verifyError = "";
+
+    $("#content").append($(`<h3style="
+    display: flex;
+    justify-content: center;
+    ">${loginMessage}</h3>
+    <form class="form" id="verifyForm">
+    <input type='text'
+    name='VerifyCode'
+    class="form-control"
+    required
+    RequireMessage = 'Veuillez entrer votre code de vérification'
+    InvalidMessage = 'Code de vérification invalide'
+    placeholder="Code de vérification de courriel"
+    value='${verifyError}'>
+    <span style='color:red'>${verifyError}</span>
+    <input type='submit' name='submit' value="Entrer" class="form-control btn-primary">
+    </form>
+    <div class="form">
+    <hr>
+    </div`));
+
+    $('#verifyForm').on("submit", function (e) {
+        e.preventDefault();
+        API.verifyEmail(API.retrieveLoggedUser().Id, $(e.target.VerifyCode).val());
+    });
+}
+
 function showContactForm(contact = null)
 {
     let create = contact == null;
