@@ -259,7 +259,7 @@ function showContactForm(contact = null)
         let contact = getFormData($("#ProfilForm"));
 
         contact.Id = contact.Id;
-        showWaitingGif();
+        //showWaitingGif();
         
         let result;
 
@@ -270,7 +270,8 @@ function showContactForm(contact = null)
             result = await API.modifyUserProfil(contact);
         }
         if (result)
-            showLoginForm();
+            showLoginForm(`votre compte a été créé. Veuillez regarder vos courriels pour réccupérer votre code
+                de vérification qui vous sera demandé lors de votre prochaine connexion.`);
         else
             renderError("Une erreur est survenue! " + API_getcurrentHttpError());
     });
@@ -445,7 +446,7 @@ function updateHeader(headerName, menu) {
                 <img src="images/PhotoCloudLogo.png" class="appLogo">
             </span>
             <span class="viewTitle">${headerName}
-                <div class="cmdIcon fa fa-plus" id="newPhotoCmd" title="Ajouter une photo"></div>
+                <div class="cmdIcon fa fa-plus" id="newPhotoCmd" title="Ajouter une photo" style="display: none;"></div>
             </span>        
             <div class="headerMenusContainer">
                 <span>&nbsp;</span> <!--filler-->
