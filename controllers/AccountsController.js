@@ -53,8 +53,9 @@ export default class AccountsController extends Controller {
             this.HttpContext.response.badRequest("UserId is not specified.")
         }
     }
-
     sendVerificationEmail(user) {
+        // bypass model bindeExtraData wich hide the user verifyCode
+        user = this.repository.findByField("Id", user.Id);
         let html = `
                 Bonjour ${user.Name}, <br /> <br />
                 Voici votre code pour confirmer votre adresse de courriel
@@ -64,7 +65,6 @@ export default class AccountsController extends Controller {
         const gmail = new Gmail();
         gmail.send(user.Email, 'Vérification de courriel...', html);
     }
-
     sendConfirmedEmail(user) {
         let html = `
                 Bonjour ${user.Name}, <br /> <br />
@@ -73,7 +73,6 @@ export default class AccountsController extends Controller {
         const gmail = new Gmail();
         gmail.send(user.Email, 'Courriel confirmé...', html);
     }
-
     //GET : /accounts/verify?id=...&code=.....
     verify() {
         if (this.repository != null) {
@@ -112,7 +111,6 @@ export default class AccountsController extends Controller {
         } else
             this.HttpContext.response.updated(false);
     }
-
     // POST: account/register body payload[{"Id": 0, "Name": "...", "Email": "...", "Password": "..."}]
     register(user) {
         if (this.repository != null) {
@@ -169,7 +167,12 @@ export default class AccountsController extends Controller {
     }
     // GET:account/remove/id
     remove(id) { // warning! this is not an API endpoint
-        if (Authorizations.writeGranted(this.HttpContext, Authorizations.user()))
+        if (Authorizations.writeGranted(this.HttpContext, Authorizations.user())) {
+            this.tokensRepository.keepByFilter(token => token.User.Id != id);
+            let previousAuthorization = this.authorizations;
+            this.authorizations = Authorizations.user();
             super.remove(id);
+            this.authorizations = previousAuthorization;
+        }
     }
 }

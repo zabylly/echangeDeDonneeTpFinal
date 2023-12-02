@@ -11,35 +11,60 @@ async function login(credential)
     let loginMessage = "";
     let emailError = "";
     let passwordError = "";
-    let isValid = true;
-    if(await API.login(email,$(credential.target.Password).val()));
+    let serverOnline = true;
+    let userToken = await API.login(email,$(credential.target.Password).val());
+    if(userToken)
     {
-        if(API.currentStatus == 481)
-        {
-            emailError = "Courriel introuvable";
-            isValid = false;
+
+        showMainPage(); 
+        initTimeout(20,()=>{
+           API.logout();
+           showLoginForm("Vous avez été déconnecté");
+           noTimeout();
+        });   
+        startCountdown();    
+    }
+    else
+    {
+        switch(API.currentStatus){
+            case 481:
+            {
+                emailError = "Courriel introuvable";
+                isValid = false;
+                break;
+            }
+            case 482:
+            {
+                passwordError = "Mot de passe incorrect";
+                isValid = false;
+                break;
+            }
+            case 0:
+            {
+                serverOnline = false;
+                break;
+            }
         }
-        if(API.currentStatus == 482)
-        {
-            passwordError = "Mot de passe incorrect";
-            isValid = false;
-        }
-        if(isValid)
-        {
-            showMainPage();
-        }
-        else
+        if(serverOnline)//check server connexion
         {
             showLoginForm(loginMessage,email,emailError,passwordError);
         }
+        else
+        {
+            showOffline();
+        }
     }
+
 
     
 }
 function showLoginForm(loginMessage = "",email = "",emailError="",passwordError ="")
 {
     eraseContent();
-    $("#content").append($(`<h3>${loginMessage}</h3>
+    $("#content").append($(`<h3style="
+    display: flex;
+    justify-content: center;
+    ">${loginMessage}</h3>
     <form class="form" id="loginForm">
     <input type='email'
     name='Email'
@@ -78,7 +103,6 @@ function showLoginForm(loginMessage = "",email = "",emailError="",passwordError 
 function showMainPage()
 {
     eraseContent();
-    updateHeader("Inscription", "login");
     updateHeader("Connecté", "connected");
     $("#content").append($(`<h2>Vous etes connecté</h2>`));
 }
@@ -200,6 +224,17 @@ function showContactForm(contact = null)
     $('#abortCmd').on("click", function () {
         showLoginForm();
     });
+}
+function showOffline()
+{
+    eraseContent();
+    $("#content").append($(`<h3 class="errorContainer">Le serveur ne répond pas</h3>
+    <hr>
+    <form class="form" id="tryConnexion">
+    <input type='submit' name='submit' value="Connexion" class="form-control btn-primary">
+    </form>`));
+    updateHeader("Problème", "problem");
+
 }
 
 //voir lui du contact
