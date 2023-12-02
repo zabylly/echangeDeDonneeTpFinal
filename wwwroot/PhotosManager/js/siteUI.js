@@ -1,5 +1,5 @@
 
-initTimeout(20,()=>{
+initTimeout(60,()=>{
     logout("Votre session est expirée. Veillez vous reconnecter")
  });   
 let contentScrollPosition = 0;
@@ -73,7 +73,7 @@ async function login(credential)
 function showLoginForm(loginMessage = "",email = "",emailError="",passwordError ="")
 {
     eraseContent();
-    $("#content").append($(`<h3style="
+    $("#content").append($(`<h3 style="
     display: flex;
     justify-content: center;
     ">${loginMessage}</h3>
@@ -168,7 +168,6 @@ function showVerifyEmail()  {
         else {
             verifyError.show();
         }
-        
     });
 }
 
