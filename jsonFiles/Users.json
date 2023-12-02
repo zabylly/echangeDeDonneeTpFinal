@@ -24,5 +24,20 @@
             "writeAccess": 2
         },
         "VerifyCode": "verified"
+    },
+    {
+        "Id": "19e0cb70-9139-11ee-b370-3bb69b967c3a",
+        "Email": "patatotrape3@gmail.com",
+        "matchedEmail": "patatotrape3@gmail.com",
+        "Password": "patatotrape3@gmail.com",
+        "matchedPassword": "patatotrape3@gmail.com",
+        "Name": "Novatruepower",
+        "Avatar": "",
+        "Created": 1701538493,
+        "VerifyCode": 1111,
+        "Authorizations": {
+            "readAccess": 1,
+            "writeAccess": 1
+        }
     }
 ]

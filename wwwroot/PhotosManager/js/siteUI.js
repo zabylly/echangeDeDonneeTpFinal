@@ -133,12 +133,7 @@ function showVerifyEmail()  {
     updateHeader("Vérification", "verify");
     eraseContent();
 
-    let verifyError = "";
-
-    $("#content").append($(`<h3style="
-    display: flex;
-    justify-content: center;
-    ">${loginMessage}</h3>
+    $("#content").append($(`
     <form class="form" id="verifyForm">
     <input type='text'
     name='VerifyCode'
@@ -146,18 +141,34 @@ function showVerifyEmail()  {
     required
     RequireMessage = 'Veuillez entrer votre code de vérification'
     InvalidMessage = 'Code de vérification invalide'
-    placeholder="Code de vérification de courriel"
-    value='${verifyError}'>
-    <span style='color:red'>${verifyError}</span>
-    <input type='submit' name='submit' value="Entrer" class="form-control btn-primary">
+    placeholder="Code de vérification de courriel">
+    <span id="verifyError" style='color:red'>Code de vérification invalide</span>
+    <input type='submit' name='submit' value="Vérifier" class="form-control btn-primary">
     </form>
     <div class="form">
-    <hr>
     </div`));
 
-    $('#verifyForm').on("submit", function (e) {
+    let verifyError = $("#verifyError");
+    verifyError.hide();
+
+    initFormValidation();
+
+    $('#verifyForm').on("submit", async function (e) {
         e.preventDefault();
-        API.verifyEmail(API.retrieveLoggedUser().Id, $(e.target.VerifyCode).val());
+
+        //showWaitingGif();
+        let result = await API.verifyEmail(API.retrieveLoggedUser().Id, $(e.target.VerifyCode).val());
+
+        if(result) {
+            showMainPage();
+        }
+        else if (API.currentStatus == 0) {
+            showOffline();
+        }
+        else {
+            verifyError.show();
+        }
+        
     });
 }
 
