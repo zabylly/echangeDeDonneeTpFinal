@@ -1,5 +1,5 @@
 
-initTimeout(20,()=>{
+initTimeout(60,()=>{
     logout("Votre session est expirée. Veillez vous reconnecter")
  });   
 let contentScrollPosition = 0;
@@ -73,7 +73,7 @@ async function login(credential)
 function showLoginForm(loginMessage = "",email = "",emailError="",passwordError ="")
 {
     eraseContent();
-    $("#content").append($(`<h3style="
+    $("#content").append($(`<h3 style="
     display: flex;
     justify-content: center;
     ">${loginMessage}</h3>
@@ -102,7 +102,7 @@ function showLoginForm(loginMessage = "",email = "",emailError="",passwordError 
     </div`));
     updateHeader("Connexion", "login");
     $('#createProfilCmd').on("click", function () {
-        showContactForm();
+        showRegisterForm();
     });
     $('#loginForm').on("submit", function (e) {
 
@@ -120,13 +120,12 @@ function showMainPage()
 }
 
 //voir lui du contact
-function newContact() {
-    contact = {};
-    contact.Id = 0;
-    contact.Name = "";
-    contact.Phone = "";
-    contact.Email = "";
-    return contact;
+function newAccount() {
+    account = {};
+    account.Id = 0;
+    account.Name = "";
+    account.Email = "";
+    return account;
 }
 
 function showVerifyEmail()  {
@@ -135,10 +134,10 @@ function showVerifyEmail()  {
 
     let verifyError = "";
 
-    $("#content").append($(`<h3style="
+    $("#content").append($(`<h3 style="
     display: flex;
     justify-content: center;
-    ">${loginMessage}</h3>
+    "></h3>
     <form class="form" id="verifyForm">
     <input type='text'
     name='VerifyCode'
@@ -161,18 +160,18 @@ function showVerifyEmail()  {
     });
 }
 
-function showContactForm(contact = null)
+function showRegisterForm(account = null)
 {
-    let create = contact == null;
+    let create = account == null;
     if (create) {
-        contact = newContact();
-        contact.Avatar = 'images/no-avatar.png';
+        account = newAccount();
+        account.Avatar = 'images/no-avatar.png';
     }
 
     eraseContent();
 
     $("#content").append($(`<form class="form" id="ProfilForm"'>
-    <input type="hidden" name="Id" value="${contact.Id}"/>
+    <input type="hidden" name="Id" value="${account.Id}"/>
     <fieldset>
     <legend>Adresse ce courriel</legend>
     <input type="email"
@@ -184,7 +183,7 @@ function showContactForm(contact = null)
     RequireMessage = 'Veuillez entrer votre courriel'
     InvalidMessage = 'Courriel invalide'
     CustomErrorMessage ="Ce courriel est déjà utilisé"
-    value="${contact.Email}"/>
+    value="${account.Email}"/>
     <input class="form-control MatchedInput"
     type="text"
     matchedInputId="Email"
@@ -194,7 +193,7 @@ function showContactForm(contact = null)
     required
     RequireMessage = 'Veuillez entrez de nouveau votre courriel'
     InvalidMessage="Les courriels ne correspondent pas" 
-    value="${contact.Email}"/>
+    value="${account.Email}"/>
     </fieldset>
     <fieldset>
     <legend>Mot de passe</legend>
@@ -224,14 +223,14 @@ function showContactForm(contact = null)
     required
     RequireMessage = 'Veuillez entrer votre nom'
     InvalidMessage = 'Nom invalide'
-    value="${contact.Name}"/>
+    value="${account.Name}"/>
     </fieldset>
     <fieldset>
     <legend>Avatar</legend>
     <div class='imageUploader'
     newImage='${create}'
     controlId='Avatar'
-    imageSrc='${contact.Avatar}'
+    imageSrc='${account.Avatar}'
     waitingImage="images/Loading_icon.gif">
     </div>
     </fieldset>
@@ -240,24 +239,31 @@ function showContactForm(contact = null)
     <div class="cancel">
     <button class="form-control btn-secondary" id="abortCmd">Annuler</button>
     </div>`));
+    if(!create)
+    {
+        $("#content").append($(`<div class="cancel">
+        <hr>
+        <button class="form-control btn btn-danger form-control" id="abortCmd">Effacer le compte</button>
+        </div>`));
+    }
 
     initFormValidation();
     initImageUploaders();
 
     $("#ProfilForm").on("submit", async function(e) {
         e.preventDefault();
-        let contact = getFormData($("#ProfilForm"));
+        let account = getFormData($("#ProfilForm"));
 
-        contact.Id = contact.Id;
+        account.Id = account.Id;
         showWaitingGif();
         
         let result;
 
         if (create) {
-            result = await API.register(contact);
+            result = await API.register(account);
         }
         else {
-            result = await API.modifyUserProfil(contact);
+            result = await API.modifyUserProfil(account);
         }
         if (result)
             showLoginForm();
@@ -364,9 +370,12 @@ function renderUserMenu() {
                 <i class="menuIcon fa fa-info-circle mx-2"></i> À propos...
             </span>
         `)
-    ); 
+    );
     $('#logoutCmd').on("click", function () {
         logout("Vous êtes déconnecté");
+    });
+    $('#editProfilCmd').on("click",function(){
+        showRegisterForm(API.retrieveLoggedUser());
     });
 }
 
