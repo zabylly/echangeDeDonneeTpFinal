@@ -102,7 +102,7 @@ function showLoginForm(loginMessage = "",email = "",emailError="",passwordError 
     </div`));
     updateHeader("Connexion", "login");
     $('#createProfilCmd').on("click", function () {
-        showContactForm();
+        showAccountForm();
     });
     $('#loginForm').on("submit", function (e) {
 
@@ -119,14 +119,14 @@ function showMainPage()
     $("#content").append($(`<h2>Vous etes connecté</h2>`));
 }
 
-//voir lui du contact
-function newContact() {
-    contact = {};
-    contact.Id = 0;
-    contact.Name = "";
-    contact.Phone = "";
-    contact.Email = "";
-    return contact;
+//voir lui du account
+function newAccount() {
+    account = {};
+    account.Id = 0;
+    account.Name = "";
+    account.Phone = "";
+    account.Email = "";
+    return account;
 }
 
 function showVerifyEmail()  {
@@ -171,18 +171,18 @@ function showVerifyEmail()  {
     });
 }
 
-function showContactForm(contact = null)
+function showAccountForm(account = null)
 {
-    let create = contact == null;
+    let create = account == null;
     if (create) {
-        contact = newContact();
-        contact.Avatar = 'images/no-avatar.png';
+        account = newAccount();
+        account.Avatar = 'images/no-avatar.png';
     }
 
     eraseContent();
 
     $("#content").append($(`<form class="form" id="ProfilForm"'>
-    <input type="hidden" name="Id" value="${contact.Id}"/>
+    <input type="hidden" name="Id" value="${account.Id}"/>
     <fieldset>
     <legend>Adresse ce courriel</legend>
     <input type="email"
@@ -194,7 +194,7 @@ function showContactForm(contact = null)
     RequireMessage = 'Veuillez entrer votre courriel'
     InvalidMessage = 'Courriel invalide'
     CustomErrorMessage ="Ce courriel est déjà utilisé"
-    value="${contact.Email}"/>
+    value="${account.Email}"/>
     <input class="form-control MatchedInput"
     type="text"
     matchedInputId="Email"
@@ -204,7 +204,7 @@ function showContactForm(contact = null)
     required
     RequireMessage = 'Veuillez entrez de nouveau votre courriel'
     InvalidMessage="Les courriels ne correspondent pas" 
-    value="${contact.Email}"/>
+    value="${account.Email}"/>
     </fieldset>
     <fieldset>
     <legend>Mot de passe</legend>
@@ -234,14 +234,14 @@ function showContactForm(contact = null)
     required
     RequireMessage = 'Veuillez entrer votre nom'
     InvalidMessage = 'Nom invalide'
-    value="${contact.Name}"/>
+    value="${account.Name}"/>
     </fieldset>
     <fieldset>
     <legend>Avatar</legend>
     <div class='imageUploader'
     newImage='${create}'
     controlId='Avatar'
-    imageSrc='${contact.Avatar}'
+    imageSrc='${account.Avatar}'
     waitingImage="images/Loading_icon.gif">
     </div>
     </fieldset>
@@ -256,18 +256,18 @@ function showContactForm(contact = null)
 
     $("#ProfilForm").on("submit", async function(e) {
         e.preventDefault();
-        let contact = getFormData($("#ProfilForm"));
+        let account = getFormData($("#ProfilForm"));
 
-        contact.Id = contact.Id;
+        account.Id = account.Id;
         //showWaitingGif();
         
         let result;
 
         if (create) {
-            result = await API.register(contact);
+            result = await API.register(account);
         }
         else {
-            result = await API.modifyUserProfil(contact);
+            result = await API.modifyUserProfil(account);
         }
 
         if (result)
@@ -299,7 +299,7 @@ function showOffline()
 
 }
 
-//voir lui du contact
+//voir lui du account
 function getFormData($form) {
     const removeTag = new RegExp("(<[a-zA-Z0-9]+>)|(</[a-zA-Z0-9]+>)", "g");
     var jsonObject = {};
