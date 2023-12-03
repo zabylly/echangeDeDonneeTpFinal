@@ -142,7 +142,7 @@ function showVerifyEmail()  {
     RequireMessage = 'Veuillez entrer votre code de vérification'
     InvalidMessage = 'Code de vérification invalide'
     placeholder="Code de vérification de courriel">
-    <span id="verifyError" style='color:red'>Code de vérification invalide</span>
+    <span id="verifyError" style='color:red">Code de vérification invalide</span>
     <input type='submit' name='submit' value="Vérifier" class="form-control btn-primary">
     </form>
     <div class="form">
@@ -392,7 +392,7 @@ function renderAdminMenu() {
     $("#contextualMenu").empty();
     $("#contextualMenu").append(
         $(`
-            <span class="dropdown-item" id="manageUserCm">
+            <span class="dropdown-item" id="manageUserCmd">
                 <i class="menuIcon fas fa-user-cog mx-2"></i>
                 Gestion des usagers
             </span>
