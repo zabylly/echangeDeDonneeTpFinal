@@ -71,6 +71,7 @@ async function login(credential)
 }
 function showLoginForm(loginMessage = "",email = "",emailError="",passwordError ="")
 {
+    noTimeout();
     eraseContent();
     $("#content").append($(`<h3 style="
     display: flex;
@@ -189,14 +190,15 @@ function showConfirmDeleteAccount()
     $('#confirmDeleteAccount').on("click",function (){
         API.unsubscribeAccount(API.retrieveLoggedUser().Id);
         showLoginForm("Votre compte a été supprimé");
-        noTimeout();
     });
 
 }
 function showAccountForm(account = null)
 {
     let create = account == null;
+    let requiredPassword =create ? "required": "" ;
     if (create) {
+        noTimeout();
         account = newAccount();
         account.Avatar = 'images/no-avatar.png';
     }
@@ -237,8 +239,10 @@ function showAccountForm(account = null)
     class="form-control"
     name="Password"
     id="Password"
-    placeholder="Mot de passe"
-    required
+    placeholder="Mot de passe" `
+    +
+    requiredPassword
+    + `
     RequireMessage = 'Veuillez entrer un mot de passe'
     InvalidMessage = 'Mot de passe trop court'/>
     <input class="form-control MatchedInput"
@@ -246,7 +250,11 @@ function showAccountForm(account = null)
     matchedInputId="Password"
     name="matchedPassword"
     id="matchedPassword"
-    placeholder="Vérification" required
+    placeholder="Vérification" 
+    `
+    +
+    requiredPassword
+    + `
     InvalidMessage="Ne correspond pas au mot de passe" />
     </fieldset>
     <fieldset>
@@ -349,6 +357,7 @@ function showAccountForm(account = null)
 }
 function showOffline()
 {
+    noTimeout();
     eraseContent();
     $("#content").append($(`<h3 class="errorContainer">Le serveur ne répond pas</h3>
     <hr>
@@ -618,7 +627,7 @@ async function renderManageUsers() {
 }
 
 function renderAbout() {
-    timeout();
+    noTimeout();
     saveContentScrollPosition();
     eraseContent();
     updateHeader("À propos...", "about");
