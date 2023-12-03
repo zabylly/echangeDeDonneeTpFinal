@@ -116,7 +116,7 @@ function showMainPage()
     startCountdown();    
     eraseContent();
     updateHeader("Connecté", "connected");
-    $("#content").append($(`<h2>Vous etes connecté</h2>`));
+    $("#content").append($(`<h2>Vous êtes connecté</h2>`));
 }
 
 //voir lui du account
