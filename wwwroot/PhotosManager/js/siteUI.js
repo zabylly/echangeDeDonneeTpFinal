@@ -532,10 +532,10 @@ function renderUserAvatar() {
         avatar.append (`<i id="picture" title="Modifier votre profil" class="editProfilCmd">
             <div class="UserAvatarSmall" userid="${loggedUser.Id}"
             style="background-image:url('${loggedUser.Avatar != "" ? loggedUser.Avatar : 'images/no-avatar.png'}')"
-            title="Nicolas Chourot"></div>
+            title="${loggedUser.Name}"></div>
             </i>`);
 
-        $(".editProfilCmd").on("click", showAccountForm);
+        $(".editProfilCmd").on("click", () => showAccountForm(loggedUser));
     }
 }
 
@@ -569,12 +569,12 @@ function updateHeader(headerName, menu) {
 
     renderUserAvatar();
 
-    let token = API.retrieveAccessToken();
+    let user = API.retrieveLoggedUser();
 
-    if (token == null) {
+    if (user == null) {
         renderAnonymousMenu();
     }
-    else if (token.readAccess == 2 && token.writeAccess == 2) {
+    else if (user.Authorizations.readAccess == 2 && user.Authorizations.writeAccess == 2) {
         renderAdminMenu();
     }
     else {
@@ -584,26 +584,30 @@ function updateHeader(headerName, menu) {
 
 async function renderManageUsers() {
     timeout();
-    let token = API.retrieveAccessToken();
+    let user = API.retrieveLoggedUser();
 
-    if (token == null)
+    if (user == null)
     {
         showLoginForm();
     }
-    else if (token.readAccess != 2 && token.writeAccess != 2) {
+    else if (user.Authorizations.readAccess != 2 && user.Authorizations.writeAccess != 2) {
         showMainPage();
     }
 
     eraseContent();
     updateHeader("Gestions des usagers", "manageUsers");
 
-    let accounts = await API.GetAccounts();
+    let accounts = Object.entries(await API.GetAccounts())[0][1];
+
+    let content = "";
 
     for (const account of accounts) {
-        console.log(account);
+        content +=`<div>${account.Email}</div>`;
     }
 
-    $("#content").append(``);
+    $("#content").append(content);
+
+    //patatotrape3@gmail.com
 }
 
 function renderAbout() {
