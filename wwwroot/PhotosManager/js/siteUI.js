@@ -177,7 +177,7 @@ function showConfirmDeleteAccount()
     display: flex;
     justify-content: center;" >Voulez-vous vraiment effacer votre compte?</h3>
     <div class="cancel">
-        <button class="form-control btn btn-danger form-control" id="deleteAccount">Effacer mon compte</button>
+        <button class="form-control btn btn-danger form-control" id="confirmDeleteAccount">Effacer mon compte</button>
     </div>
     <br>
     <div class="cancel">
@@ -186,10 +186,10 @@ function showConfirmDeleteAccount()
     $('#abortCmd').on("click", function () {
         showMainPage();
     });
-    $('#deleteAccout').on("click",function (){
-        logout("Votre compte à été supprimé");
-        API.unsubscribeAccount(userId);
-
+    $('#confirmDeleteAccount').on("click",function (){
+        API.unsubscribeAccount(API.retrieveLoggedUser().Id);
+        showLoginForm("Votre compte a été supprimé");
+        noTimeout();
     });
 
 }
