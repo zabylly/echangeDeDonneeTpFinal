@@ -1,6 +1,6 @@
 
 initTimeout(60,()=>{
-    logout("Votre session est expirée. Veillez vous reconnecter")
+    logout("Votre session est expirée. Veuillez vous reconnecter")
  });   
 let contentScrollPosition = 0;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -9,9 +9,9 @@ init_UI();
 function init_UI() {
     showLoginForm();
 }
-function logout(logoutMessage)
+async function logout(logoutMessage)
 {
-    API.logout();
+    await API.logout();
     showLoginForm(logoutMessage);
     noTimeout();
 }
@@ -31,7 +31,8 @@ async function login(credential)
         }
         else
         {
-            showMainPage(); 
+            showMainPage();
+            UpdateUserAvatar(); 
         }
     }
     else
@@ -143,9 +144,7 @@ function showVerifyEmail()  {
     placeholder="Code de vérification de courriel">
     <span id="verifyError" style='color:red'>Code de vérification invalide</span>
     <input type='submit' name='submit' value="Vérifier" class="form-control btn-primary">
-    </form>
-    <div class="form">
-    </div`));
+    </form>`));
 
     let verifyError = $("#verifyError");
     verifyError.hide();
@@ -430,6 +429,7 @@ function renderUserMenu() {
     ); 
     $('#logoutCmd').on("click", function () {
         logout("Vous êtes déconnecté");
+        UpdateUserAvatar();
     });
     $('#editProfilCmd').on("click",function(){
         showAccountForm(API.retrieveLoggedUser());
@@ -440,7 +440,7 @@ function renderAdminMenu() {
     $("#contextualMenu").empty();
     $("#contextualMenu").append(
         $(`
-            <span class="dropdown-item" id="manageUserCm">
+            <span class="dropdown-item" id="manageUserCmd">
                 <i class="menuIcon fas fa-user-cog mx-2"></i>
                 Gestion des usagers
             </span>
@@ -484,11 +484,35 @@ function renderAdminMenu() {
                 <i class="menuIcon fa fa-info-circle mx-2"></i> À propos...
             </span>
         `)
-    ); 
+    );
+    $('#logoutCmd').on("click", function () {
+        logout("Vous êtes déconnecté");
+        UpdateUserAvatar();
+    }); 
 }
 
 function eraseHeader() {
     $("#header").empty();
+}
+
+function UpdateUserAvatar() {
+    let loggedUser = API.retrieveLoggedUser();
+
+
+    if (loggedUser != null)
+    {
+        let avatar = $('#picture');
+
+        avatar.attr("title", "Modifier votre profil")
+
+        avatar.empty();
+
+        avatar.append (`<i id="picture" title="Modifier votre profil">
+            <div class="UserAvatarSmall" userid="${loggedUser.Id}" id="editProfilCmd"
+            style="background-image:url('${loggedUser.Avatar != "" ? loggedUser.Avatar : 'images/no-avatar.png'}')"
+            title="Nicolas Chourot"></div>
+            </i>`);
+    }
 }
 
 //menu : le menu change selon la page
@@ -505,6 +529,8 @@ function updateHeader(headerName, menu) {
             </span>        
             <div class="headerMenusContainer">
                 <span>&nbsp;</span> <!--filler-->
+                <i id="picture">
+                </i>
                 <div class="dropdown ms-auto dropdownLayout">
                     <!-- Articles de menu -->
                     <div data-bs-toggle="dropdown" aria-expanded="false">
