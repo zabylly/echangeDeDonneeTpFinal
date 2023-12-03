@@ -290,20 +290,28 @@ function showAccountForm(account = null)
     initFormValidation();
     initImageUploaders();
 
-    $("#ProfilForm").on("submit", async function(e) {
-        e.preventDefault();
-        let account = getFormData($("#ProfilForm"));
+    addConflictValidation(API.checkConflictURL(), 'Email', 'saveUser');
 
-        account.Id = account.Id;
+    $("#ProfilForm").on("submit", async function(e) {
+        let profil = getFormData($("#ProfilForm"));
+``
+        if (create)
+        {
+            delete profil.matchedPassword;
+            delete profil.matchedEmail;
+        }
+        e.preventDefault();
+
+        profil.Id = account.Id;
         //showWaitingGif();
         
         let result;
 
         if (create) {
-            result = await API.register(account);
+            result = await API.register(profil);
         }
         else {
-            result = await API.modifyUserProfil(account);
+            result = await API.modifyUserProfil(profil);
         }
 
         if (result)
@@ -339,7 +347,6 @@ function showOffline()
     <input type='submit' name='submit' value="Connexion" class="form-control btn-primary">
     </form>`));
     updateHeader("Problème", "problem");
-
 }
 
 //voir lui du account
