@@ -34,8 +34,6 @@ async function login(credential)
             showMainPage();
             UpdateUserAvatar(); 
         }
-
-        startCountdown();    
     }
     else
     {
@@ -115,6 +113,7 @@ function showLoginForm(loginMessage = "",email = "",emailError="",passwordError 
 }
 function showMainPage()
 {
+    startCountdown();    
     eraseContent();
     updateHeader("Connecté", "connected");
     $("#content").append($(`<h2>Vous etes connecté</h2>`));
@@ -131,9 +130,9 @@ function newAccount() {
 }
 
 function showVerifyEmail()  {
+    startCountdown(); 
     updateHeader("Vérification", "verify");
     eraseContent();
-
     $("#content").append($(`
     <form class="form" id="verifyForm">
     <input type='text'
@@ -169,7 +168,31 @@ function showVerifyEmail()  {
         }
     });
 }
+function showConfirmDeleteAccount()
+{
+    startCountdown(); 
+    eraseContent();
+    $("#content").append($(`
+    <h3 style="
+    display: flex;
+    justify-content: center;" >Voulez-vous vraiment effacer votre compte?</h3>
+    <div class="cancel">
+        <button class="form-control btn btn-danger form-control" id="deleteAccount">Effacer mon compte</button>
+    </div>
+    <br>
+    <div class="cancel">
+    <button class="form-control btn-secondary" id="abortCmd">Annuler</button>
+    </div>`));
+    $('#abortCmd').on("click", function () {
+        showMainPage();
+    });
+    $('#deleteAccout').on("click",function (){
+        logout("Votre compte à été supprimé");
+        API.unsubscribeAccount(userId);
 
+    });
+
+}
 function showAccountForm(account = null)
 {
     let create = account == null;
@@ -177,7 +200,10 @@ function showAccountForm(account = null)
         account = newAccount();
         account.Avatar = 'images/no-avatar.png';
     }
-
+    else
+    {
+        startCountdown();
+    }
     eraseContent();
 
     $("#content").append($(`<form class="form" id="ProfilForm"'>
@@ -249,7 +275,18 @@ function showAccountForm(account = null)
     <div class="cancel">
     <button class="form-control btn-secondary" id="abortCmd">Annuler</button>
     </div>`));
+    if(!create)
+    {
+        $("#content").append($(`<div class="cancel">
+        <hr>
+        <button class="form-control btn btn-danger form-control" id="deleteAccount">Effacer le compte</button>
+        </div>`));
+        $('#deleteAccount').on("click", function () {
+            
+            showConfirmDeleteAccount();
+        });
 
+    }
     initFormValidation();
     initImageUploaders();
 
@@ -291,7 +328,14 @@ function showAccountForm(account = null)
     });
 
     $('#abortCmd').on("click", function () {
-        showLoginForm();
+        if(create)
+        {
+            showLoginForm();
+        }
+        else
+        {
+            showMainPage();
+        }
     });
 }
 function showOffline()
@@ -387,11 +431,15 @@ function renderUserMenu() {
             <span class="dropdown-item" id="aboutCmd">
                 <i class="menuIcon fa fa-info-circle mx-2"></i> À propos...
             </span>
+            
         `)
     ); 
     $('#logoutCmd').on("click", function () {
         logout("Vous êtes déconnecté");
         UpdateUserAvatar();
+    });
+    $('#editProfilCmd').on("click",function(){
+        showAccountForm(API.retrieveLoggedUser());
     });
 }
 
