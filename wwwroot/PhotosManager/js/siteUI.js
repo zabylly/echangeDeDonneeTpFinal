@@ -457,6 +457,9 @@ function renderUserMenu() {
     $('#editProfilCmd').on("click",function(){
         showAccountForm(API.retrieveLoggedUser());
     });
+    $('#aboutCmd').on("click", function () {
+        renderAbout();
+    });
 }
 
 function renderAdminMenu() {
@@ -517,7 +520,10 @@ function renderAdminMenu() {
     });
     $('#manageUserCmd').on("click", function () {
         renderManageUsers();
-    }); 
+    });
+    $('#aboutCmd').on("click", function () {
+        renderAbout();
+    });
 }
 
 function eraseHeader() {
@@ -532,14 +538,12 @@ function renderUserAvatar() {
     {
         let avatar = $('#picture');
 
-        avatar.attr("title", "Modifier votre profil")
-
         avatar.empty();
 
-        avatar.append (`<i id="picture" title="Modifier votre profil" class="editProfilCmd">
+        avatar.append (`<i class="editProfilCmd">
             <div class="UserAvatarSmall" userid="${loggedUser.Id}"
             style="background-image:url('${loggedUser.Avatar != "" ? loggedUser.Avatar : 'images/no-avatar.png'}')"
-            title="${loggedUser.Name}"></div>
+            title="Modifier votre profil"></div>
             </i>`);
 
         $(".editProfilCmd").on("click", () => showAccountForm(loggedUser));
@@ -609,7 +613,12 @@ async function renderManageUsers() {
     let content = "";
 
     for (const account of accounts) {
-        content +=`<div>${account.Email}</div>`;
+        content +=
+        `<i class="editProfilCmd">
+        <div class="UserAvatarSmall" userid="${account.Id}"
+        style="background-image:url('${account.Avatar != "" ? account.Avatar : 'images/no-avatar.png'}')"
+        title="Modifier votre profil"></div>
+        </i>`;
     }
 
     $("#content").append(content);
