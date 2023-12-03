@@ -32,7 +32,7 @@ async function login(credential)
         else
         {
             showMainPage();
-            UpdateUserAvatar(); 
+            renderUserAvatar(); 
         }
     }
     else
@@ -436,10 +436,11 @@ function renderUserMenu() {
     ); 
     $('#logoutCmd').on("click", function () {
         logout("Vous êtes déconnecté");
-        UpdateUserAvatar();
+        renderUserAvatar();
     });
     $('#editProfilCmd').on("click",function(){
         showAccountForm(API.retrieveLoggedUser());
+        renderUserAvatar();
     });
 }
 
@@ -494,7 +495,15 @@ function renderAdminMenu() {
     );
     $('#logoutCmd').on("click", function () {
         logout("Vous êtes déconnecté");
-        UpdateUserAvatar();
+        renderUserAvatar();
+    });
+    $('#editProfilCmd').on("click",function(){
+        showAccountForm(API.retrieveLoggedUser());
+        renderUserAvatar();
+    });
+    $('#manageUserCmd').on("click", function () {
+        renderManageUsers();
+        renderAdministrationAvatar();
     }); 
 }
 
@@ -502,7 +511,7 @@ function eraseHeader() {
     $("#header").empty();
 }
 
-function UpdateUserAvatar() {
+function renderUserAvatar() {
     let loggedUser = API.retrieveLoggedUser();
 
 
@@ -514,12 +523,30 @@ function UpdateUserAvatar() {
 
         avatar.empty();
 
-        avatar.append (`<i id="picture" title="Modifier votre profil">
-            <div class="UserAvatarSmall" userid="${loggedUser.Id}" id="editProfilCmd"
+        avatar.append (`<i id="picture" title="Modifier votre profil" class="editProfilCmd">
+            <div class="UserAvatarSmall" userid="${loggedUser.Id}"
             style="background-image:url('${loggedUser.Avatar != "" ? loggedUser.Avatar : 'images/no-avatar.png'}')"
             title="Nicolas Chourot"></div>
             </i>`);
+
+        $(".editProfilCmd").on("click", showAccountForm);
     }
+}
+
+function renderAdministrationAvatar() {
+    let avatar = $('#picture');
+
+    avatar.attr("title", "Modifier votre profil")
+
+    avatar.empty();
+
+    avatar.append (`<i id="picture" title="Gérer les usagers" class="editProfilCmd">
+        <div class="UserAvatarSmall" userid="${loggedUser.Id}"
+        style="background-image:url('${loggedUser.Avatar != "" ? loggedUser.Avatar : 'images/no-avatar.png'}')"
+        title="Nicolas Chourot"></div>
+        </i>`);
+    
+    $(".editProfilCmd").on("click", showAccountForm);
 }
 
 //menu : le menu change selon la page
@@ -543,25 +570,52 @@ function updateHeader(headerName, menu) {
                     <div data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="cmdIcon fa fa-ellipsis-vertical"></i>
                     </div>
-                <div class="dropdown-menu noselect" id="contextualMenu">
-                </div>
+                    <div class="dropdown-menu noselect" id="contextualMenu">
+                    </div>
                 </div>
             </div>
         `)
     );
 
-    let user = API.retrieveLoggedUser();
+    let token = API.retrieveAccessToken();
 
-    if (user == null) {
+    if (token == null) {
         renderAnonymousMenu();
     }
-    else if (user.Authorizations.readAccess == 2 && user.Authorizations.writeAccess == 2) {
+    else if (token.readAccess == 2 && token.writeAccess == 2) {
         renderAdminMenu();
     }
     else {
         renderUserMenu();
     }
 }
+
+async function renderManageUsers() {
+    timeout();
+    let token = API.retrieveAccessToken();
+
+    if (token == null)
+    {
+        showLoginForm();
+    }
+    else if (token.readAccess != 2 && token.writeAccess != 2) {
+        showMainPage();
+    }
+
+    eraseContent();
+    updateHeader("Gestions des usagers", "manageUsers");
+
+
+
+    let accounts = await API.GetAccounts();
+
+    for (const account of accounts) {
+        console.log(account);
+    }
+
+    $("#content").append(``);
+}
+
 function renderAbout() {
     timeout();
     saveContentScrollPosition();
