@@ -269,9 +269,16 @@ function showContactForm(contact = null)
         else {
             result = await API.modifyUserProfil(contact);
         }
+
         if (result)
-            showLoginForm(`votre compte a été créé. Veuillez regarder vos courriels pour réccupérer votre code
-                de vérification qui vous sera demandé lors de votre prochaine connexion.`);
+        {
+            showLoginForm(create ?
+                
+                `votre compte a été créé. Veuillez regarder vos courriels pour réccupérer votre code
+                de vérification qui vous sera demandé lors de votre prochaine connexion.` :
+
+                "votre compte a modifé avec succès.");
+        }
         else
             renderError("Une erreur est survenue! " + API_getcurrentHttpError());
     });
