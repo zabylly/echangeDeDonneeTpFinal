@@ -396,6 +396,13 @@ function renderAnonymousMenu() {
             </span>
         `)
     ); 
+    $('#aboutCmd').on("click", function () {
+        renderAbout();
+    });
+    $('#loginCmd').on("click", function () {
+        renderAbout();
+        showLoginForm();
+    });
 }
 
 function renderUserMenu() {
