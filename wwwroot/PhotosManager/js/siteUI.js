@@ -277,7 +277,7 @@ function showContactForm(contact = null)
                 `votre compte a été créé. Veuillez regarder vos courriels pour réccupérer votre code
                 de vérification qui vous sera demandé lors de votre prochaine connexion.` :
 
-                "votre compte a modifé avec succès.");
+                "votre compte a été modifé avec succès.");
         }
         else
             renderError("Une erreur est survenue! " + API_getcurrentHttpError());
