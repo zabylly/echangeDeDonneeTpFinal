@@ -1,5 +1,5 @@
 
-initTimeout(60,()=>{
+initTimeout(120,()=>{
     logout("Votre session est expirée. Veuillez vous reconnecter");
  });   
 let contentScrollPosition = 0;
@@ -645,8 +645,8 @@ function AccountPicture(account) {
     return `<span class="UserAvatar""
     style="background-image:url('${avatar != "" ? avatar : 'images/no-avatar.png'}')"
     title="${name}"></span>
-    <span class="UserName">${name}<br>
-    <span class="UserEmail">${account.Email}</span>`
+    <span class="UserContainer">
+    <span class="UserName">${name}</span>`    
 }
 
 async function renderManageUsers() {
@@ -679,7 +679,7 @@ async function renderManageUsers() {
                 $("#content").append(                
                     `<i class="UserLayout">
                         ${AccountPicture(account)}
-                        <div>
+                        <div class="UserCommandPanel">
                             <span id="rightCmd_${accountId}" class="fas ${isAdministrator ? "fa-user-cog" : "fa-user-alt"}
                               cmdIconVisible dodgerblueCmd"></span>
 
@@ -689,6 +689,7 @@ async function renderManageUsers() {
                             
                             <span id="deleteCmd_${accountId}" class="fas fa-user-slash goldenrodCmd cmdIconVisible"></span>
                         </div>
+                        <span class="UserEmail">${account.Email}</span>
                         </span>
                     </i>`
                 );
@@ -740,6 +741,7 @@ async function renderManageUsers() {
                 showAdminConfirmDeleteAccount(account);
             });
         }
+
     }
 }
 
