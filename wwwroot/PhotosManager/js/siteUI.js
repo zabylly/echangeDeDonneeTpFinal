@@ -676,12 +676,13 @@ async function renderManageUsers() {
                         <span class="UserName">${name}<br>
                         <span class="UserEmail">${account.Email}</span>
                         <div>
-                            <span'
-                             class="fas ${isAdministrator ? "fa-user-cog" : "fa-user-alt"}
+                            <span class="fas ${isAdministrator ? "fa-user-cog" : "fa-user-alt"}
                               cmdIconVisible dodgerblueCmd right"></span>
+
                             <span class="${isBlocked ? "fa fa-ban redCmd" : "fa-regular fa-circle greenCmd" }
-                            cmdIconVisible dodgerblueCmd"></span>
-                            <span class="fas fa-user-slash goldenrodCmd  cmdIconVisible dodgerblueCmd"></span>
+                            cmdIconVisible ban"></span>
+                            
+                            <span class="fas fa-user-slash goldenrodCmd  cmdIconVisible"></span>
                         </div>
                         </span>
                     </i>`
@@ -703,8 +704,31 @@ async function renderManageUsers() {
                 target.addClass("fa-user-cog");
                 //GrantAdminAcess(account);
             }
+        });
 
-            console.log(target.hasClass("fa-user-cog"));
+        $(".ban").on("click", (e) => {
+            let target = $(e.target);
+
+            if (target.hasClass("fa-ban"))
+            {
+                target.removeClass("fa");
+                target.removeClass("fa-ban");
+                target.removeClass("redCmd");
+                target.addClass("fa-regular");
+                target.addClass("fa-circle");
+                target.addClass("greenCmd");
+                //GrantUserAcess(account);
+            }
+            else {
+                target.removeClass("fa-regular");
+                target.removeClass("fa-circle");
+                target.removeClass("greenCmd");
+                target.removeClass("ban");
+                target.addClass("fa");
+                target.addClass("fa-ban");
+                target.addClass("redCmd");
+                //GrantBanAcess(account);
+            }
         });
         }
 
@@ -724,6 +748,15 @@ async function renderManageUsers() {
 
             console.log(target.hasClass("fa-user-cog"));
         });
+    }
+}
+
+async function GrantBanAcess(profil) {
+    if (isAdmin(API.retrieveLoggedUser())) {
+        profil.Authorizations.readAccess = -1;
+        profil.Authorizations.writeAccess = -1;
+        profil.Password = "";
+        //await API.modifyUserProfilByAdmin(profil);
     }
 }
 
