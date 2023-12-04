@@ -11,9 +11,17 @@ function init_UI() {
 }
 async function logout(logoutMessage)
 {
-    await API.logout();
-    showLoginForm(logoutMessage);
-    noTimeout();
+    let result = await API.logout();
+    if(result)
+    {
+        showLoginForm(logoutMessage);
+    }
+    else
+    {
+        console.log(currentHttpError);
+        showOffline();
+    }
+
 }
 async function login(credential)
 {
@@ -188,8 +196,17 @@ function showConfirmDeleteAccount()
         showMainPage();
     });
     $('#confirmDeleteAccount').on("click",function (){
-        API.unsubscribeAccount(API.retrieveLoggedUser().Id);
-        showLoginForm("Votre compte a été supprimé");
+        let result = API.unsubscribeAccount(API.retrieveLoggedUser().Id);
+        if(result)
+        {
+            showLoginForm("Votre compte a été supprimé");
+        }
+        else
+        {
+            console.log(currentHttpError);
+            showOffline();
+        }
+
     });
 
 }
@@ -341,7 +358,11 @@ function showAccountForm(account = null)
                 "votre compte a été modifé avec succès.");
         }
         else
-            renderError("Une erreur est survenue! " + API_getcurrentHttpError());
+        {
+            console.log(currentHttpError);
+            showOffline();
+        }
+
     });
 
     $('#abortCmd').on("click", function () {
