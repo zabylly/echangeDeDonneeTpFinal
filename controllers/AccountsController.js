@@ -167,8 +167,8 @@ export default class AccountsController extends Controller {
         } else
             this.HttpContext.response.unAuthorized();
     }
-    // PUT:account/modifyByAdmin body payload[{"Id": 0, "Name": "...", "Email": "...", "Password": "..."}]
-    modifyByAdmin(user) {
+    // PUT:account/modifybyadmin body payload[{"Id": 0, "Name": "...", "Email": "...", "Password": "..."}]
+    modifybyadmin(user) {
         // empty asset members imply no change and there values will be taken from the stored record
         if (Authorizations.writeGranted(this.HttpContext, Authorizations.admin())) {
             if (this.repository != null) {

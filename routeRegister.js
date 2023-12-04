@@ -14,7 +14,6 @@ export default class RouteRegister {
         let path = httpContext.path;
         let foundRoute = null;
         registeredRoutes.forEach(route => {
-            //console.log(route.method);
             if (route.method == httpContext.req.method) {
                 if (path.model != undefined && path.model == route.modelName) {
                     if (path.action != undefined && path.action == route.actionName) {
