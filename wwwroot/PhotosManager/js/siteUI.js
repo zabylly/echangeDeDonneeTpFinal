@@ -645,7 +645,7 @@ function updateHeader(headerName, menu) {
 function AccountPicture(account) {
     let avatar = account.Avatar;
     let name = account.Name;
-    return `<span class="UserAvatar""
+    return `<span class="UserAvatar"
     style="background-image:url('${avatar.slice(avatar.lastIndexOf("/") + 1) != "" ? avatar : 'images/no-avatar.png'}')"
     title="${name}"></span>
     <span class="UserContainer">
