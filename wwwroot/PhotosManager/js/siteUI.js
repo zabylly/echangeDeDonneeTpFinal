@@ -569,16 +569,18 @@ function eraseHeader() {
 function renderUserAvatar() {
     let loggedUser = API.retrieveLoggedUser();
 
-
     if (loggedUser != null)
     {
         let avatar = $('#picture');
+
+        let picture = loggedUser.Avatar;
 
         avatar.empty();
 
         avatar.append (`<i class="editProfilCmd">
             <div class="UserAvatarSmall" userid="${loggedUser.Id}"
-            style="background-image:url('${loggedUser.Avatar != "" ? loggedUser.Avatar : 'images/no-avatar.png'}')"
+            style="background-image:url('${picture.slice(picture.lastIndexOf("/") + 1) != ""
+             ? picture : 'images/no-avatar.png'}')"
             title="Modifier votre profil"></div>
             </i>`);
 
@@ -744,7 +746,6 @@ async function renderManageUsers() {
 function showAdminConfirmDeleteAccount(account)
 {
     if (isAdmin(API.retrieveLoggedUser())) {
-
         startCountdown(); 
         eraseContent();
         updateHeader("Retrait de compte");
@@ -752,9 +753,13 @@ function showAdminConfirmDeleteAccount(account)
         <h3 style="
         display: flex;
         justify-content: center;" >Voulez-vous vraiment effacer cette usager?</h3>
-        <div class="UserLayout">
+        <div class="UserLayout" 
+        style="
+        display: flex;
+        justify-content: center;" >
             ${AccountPicture(account)}
         </div>
+        <br>
         <div class="cancel">
             <button class="form-control btn btn-danger form-control" id="confirmDeleteAccount">Effacer</button>
         </div>
@@ -770,7 +775,7 @@ function showAdminConfirmDeleteAccount(account)
             console.log(result);
             if(result)
             {
-                showLoginForm("Cette uager a été supprimé");
+                showLoginForm("Cette usager a été supprimé");
             }
             else
             {
