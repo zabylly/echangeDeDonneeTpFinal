@@ -55,9 +55,10 @@ export default class AccountsController extends Controller {
             this.HttpContext.response.badRequest("UserId is not specified.")
         }
     }
-    sendVerificationEmail(user) {
+    sendVerificationEmail(user, isCreated) {
         // bypass model bindeExtraData wich hide the user verifyCode
-        user = this.repository.findByField("Id", user.Id);
+        if (isCreated)
+            user = this.repository.findByField("Id", user.Id);
         let html = `
                 Bonjour ${user.Name}, <br /> <br />
                 Voici votre code pour confirmer votre adresse de courriel
@@ -122,7 +123,7 @@ export default class AccountsController extends Controller {
             let newUser = this.repository.add(user);
             if (this.repository.model.state.isValid) {
                 this.HttpContext.response.created(newUser);
-                this.sendVerificationEmail(newUser);
+                this.sendVerificationEmail(newUser, true);
             } else {
                 if (this.repository.model.state.inConflict)
                     this.HttpContext.response.conflict(this.repository.model.state.errors);
@@ -148,7 +149,7 @@ export default class AccountsController extends Controller {
                     user.Authorizations = foundedUser.Authorizations;
                     if (user.Email != foundedUser.Email) {
                         user.VerifyCode = utilities.makeVerifyCode(6);
-                        this.sendVerificationEmail(user);
+                        this.sendVerificationEmail(user, false);
                     }
                     let updatedUser = this.repository.update(user.Id, user);
                     if (this.repository.model.state.isValid) {
@@ -185,7 +186,7 @@ export default class AccountsController extends Controller {
 
                     if (user.Email != foundedUser.Email) {
                         user.VerifyCode = utilities.makeVerifyCode(6);
-                        this.sendVerificationEmail(user);
+                        this.sendVerificationEmail(user, false);
                     }
                     let updatedUser = this.repository.update(user.Id, user);
                     if (this.repository.model.state.isValid) {
