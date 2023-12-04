@@ -56,8 +56,9 @@ export default class AccountsController extends Controller {
         }
     }
     sendVerificationEmail(user, isCreated) {
-        // bypass model bindeExtraData wich hide the user verifyCode
+        // fix the bug
         if (isCreated)
+            // bypass model bindeExtraData wich hide the user verifyCode
             user = this.repository.findByField("Id", user.Id);
         let html = `
                 Bonjour ${user.Name}, <br /> <br />
