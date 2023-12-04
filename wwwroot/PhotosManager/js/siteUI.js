@@ -586,7 +586,7 @@ function isAdmin(user) {
     return user.Authorizations.readAccess == 2 && user.Authorizations.writeAccess == 2;
 }
 
-function isBan() {
+function isBan(user) {
     return user.Authorizations.readAccess == -1 && user.Authorizations.writeAccess == -1;
 }
 
