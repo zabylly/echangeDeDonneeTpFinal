@@ -634,26 +634,35 @@ async function renderManageUsers() {
     else if (user.Authorizations.readAccess != 2 && user.Authorizations.writeAccess != 2) {
         showMainPage();
     }
+    else {
+        eraseContent();
+        updateHeader("Gestions des usagers", "manageUsers");
+    
+        let accounts = Object.entries(await API.GetAccounts())[0][1];
+    
+        let userId = user.Id;
+        let content = "";
+    
+        for (const account of accounts) {
+            let accountId = account.Id;
 
-    eraseContent();
-    updateHeader("Gestions des usagers", "manageUsers");
+            if (accountId != user.Id)
+            {
+                let avatar = account.Avatar;
 
-    let accounts = Object.entries(await API.GetAccounts())[0][1];
+                let name = account.Name;
 
-    let content = "";
-
-    for (const account of accounts) {
-        content +=
-        `<i class="editProfilCmd">
-        <div class="UserAvatarSmall" userid="${account.Id}"
-        style="background-image:url('${account.Avatar != "" ? account.Avatar : 'images/no-avatar.png'}')"
-        title="Modifier votre profil"></div>
-        </i>`;
+                content +=
+                `<i class="UserInfo">
+                <div class="UserAvatar" userid="${userId}"
+                style="background-image:url('${avatar != "" ? avatar : 'images/no-avatar.png'}')"
+                title="${name}"></div>
+                </i>`;
+            }
+        }
+    
+        $("#content").append(content);
     }
-
-    $("#content").append(content);
-
-    //patatotrape3@gmail.com
 }
 
 function renderAbout() {
