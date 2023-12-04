@@ -18,7 +18,7 @@ async function logout(logoutMessage)
     }
     else
     {
-        console.log(currentHttpError);
+        console.log(API.currentHttpError);
         showOffline();
     }
 
@@ -31,16 +31,17 @@ async function login(credential)
     let passwordError = "";
     let serverOnline = true;
     let userToken = await API.login(email,$(credential.target.Password).val());
+    console.log(userToken.VerifyCode);
     if(userToken)
     {
-        if(userToken.VerifyCode == "unverified")
-        {
-            showVerifyEmail();
-        }
-        else
+        if(userToken.VerifyCode == "verified")
         {
             showMainPage();
             renderUserAvatar(); 
+        }
+        else
+        {
+            showVerifyEmail();
         }
     }
     else
@@ -195,15 +196,16 @@ function showConfirmDeleteAccount()
     $('#abortCmd').on("click", function () {
         showMainPage();
     });
-    $('#confirmDeleteAccount').on("click",function (){
-        let result = API.unsubscribeAccount(API.retrieveLoggedUser().Id);
+    $('#confirmDeleteAccount').on("click",async function (){
+        let result = await API.unsubscribeAccount(API.retrieveLoggedUser().Id);
+        console.log(result);
         if(result)
         {
             showLoginForm("Votre compte a été supprimé");
         }
         else
         {
-            console.log(currentHttpError);
+            console.log(API.currentHttpError);
             showOffline();
         }
 
@@ -359,7 +361,7 @@ function showAccountForm(account = null)
         }
         else
         {
-            console.log(currentHttpError);
+            console.log(API.currentHttpError);
             showOffline();
         }
 
