@@ -1,6 +1,6 @@
 
 initTimeout(60,()=>{
-    logout("Votre session est expirée. Veuillez vous reconnecter")
+    logout("Votre session est expirée. Veuillez vous reconnecter");
  });   
 let contentScrollPosition = 0;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -32,7 +32,7 @@ async function login(credential)
     let serverOnline = true;
     let userToken = await API.login(email,$(credential.target.Password).val());
     console.log(userToken.VerifyCode);
-    if(userToken)
+    if(userToken && !isBan(userToken))
     {
         if(userToken.VerifyCode == "verified")
         {
@@ -67,6 +67,8 @@ async function login(credential)
         }
         if(serverOnline)//check server connexion
         {
+            if(isBan(userToken))
+                loginMessage = "Votre compte à été bannis";
             showLoginForm(loginMessage,email,emailError,passwordError);
         }
         else
@@ -380,6 +382,8 @@ function showAccountForm(account = null)
 }
 function showOffline()
 {
+    API.eraseLoggedUser();
+    API.eraseAccessToken();
     noTimeout();
     eraseContent();
     $("#content").append($(`<h3 class="errorContainer">Le serveur ne répond pas</h3>
