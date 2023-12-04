@@ -174,6 +174,7 @@ export default class AccountsController extends Controller {
         // empty asset members imply no change and there values will be taken from the stored record
         if (Authorizations.writeGranted(this.HttpContext, Authorizations.admin())) {
             if (this.repository != null) {
+                user.Created = utilities.nowInSeconds();
                 let foundedUser = this.repository.findByField("Id", user.Id);
                 if (foundedUser != null) {
                     user.VerifyCode = foundedUser.VerifyCode;
