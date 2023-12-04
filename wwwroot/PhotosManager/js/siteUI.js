@@ -775,8 +775,10 @@ function showAdminConfirmDeleteAccount(account)
         $('#abortCmd').on("click", function () {
             renderManageUsers();
         });
+        let accountId = account.Id;
+
         $('#confirmDeleteAccount').on("click",async function (){
-            let result = await API.unsubscribeAccount(account.id);
+            let result = await API.unsubscribeAccount(accountId);
             console.log(result);
             if(result)
             {
