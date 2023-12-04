@@ -637,6 +637,16 @@ function updateHeader(headerName, menu) {
     }
 }
 
+function AccountPicture(account) {
+    let avatar = account.Avatar;
+    let name = account.Name;
+    return `<span class="UserAvatar""
+    style="background-image:url('${avatar != "" ? avatar : 'images/no-avatar.png'}')"
+    title="${name}"></span>
+    <span class="UserName">${name}<br>
+    <span class="UserEmail">${account.Email}</span>`
+}
+
 async function renderManageUsers() {
     timeout();
     let user = API.retrieveLoggedUser();
@@ -661,28 +671,21 @@ async function renderManageUsers() {
 
             if (accountId != userId)
             {
-                let avatar = account.Avatar;
-
-                let name = account.Name;
-
                 let isAdministrator = isAdmin(account);
                 let isBlocked = isBan(account);
 
                 $("#content").append(                
                     `<i class="UserLayout">
-                        <span class="UserAvatar""
-                        style="background-image:url('${avatar != "" ? avatar : 'images/no-avatar.png'}')"
-                        title="${name}"></span>
-                        <span class="UserName">${name}<br>
-                        <span class="UserEmail">${account.Email}</span>
+                        ${AccountPicture(account)}
                         <div>
-                            <span class="fas ${isAdministrator ? "fa-user-cog" : "fa-user-alt"}
-                              cmdIconVisible dodgerblueCmd right"></span>
+                            <span id="rightCmd_${accountId}" class="fas ${isAdministrator ? "fa-user-cog" : "fa-user-alt"}
+                              cmdIconVisible dodgerblueCmd"></span>
 
-                            <span class="${isBlocked ? "fa fa-ban redCmd" : "fa-regular fa-circle greenCmd" }
-                            cmdIconVisible ban"></span>
+                            <span id="banCmd_${accountId}" 
+                            class="${isBlocked ? "fa fa-ban redCmd" : "fa-regular fa-circle greenCmd" }
+                            cmdIconVisible"></span>
                             
-                            <span class="fas fa-user-slash goldenrodCmd  cmdIconVisible"></span>
+                            <span id="deleteCmd_${accountId}" class="fas fa-user-slash goldenrodCmd cmdIconVisible"></span>
                         </div>
                         </span>
                     </i>`
@@ -690,63 +693,91 @@ async function renderManageUsers() {
             }
 
             
-        $(".right").on("click", (e) => {
-            let target = $(e.target);
+            $(`#rightCmd_${accountId}`).on("click", (e) => {
+                let target = $(e.target);
 
-            if (target.hasClass("fa-user-cog"))
-            {
-                target.removeClass("fa-user-cog");
-                target.addClass("fa-user-alt");
-                //GrantUserAcess(account);
-            }
-            else {
-                target.removeClass("fa-user-alt");
-                target.addClass("fa-user-cog");
-                //GrantAdminAcess(account);
-            }
-        });
+                if (target.hasClass("fa-user-cog"))
+                {
+                    target.removeClass("fa-user-cog");
+                    target.addClass("fa-user-alt");
+                    GrantUserAcess(account);
+                }
+                else {
+                    target.removeClass("fa-user-alt");
+                    target.addClass("fa-user-cog");
+                    GrantAdminAcess(account);
+                }
+            });
 
-        $(".ban").on("click", (e) => {
-            let target = $(e.target);
+            $(`#banCmd_${accountId}`).on("click", (e) => {
+                let target = $(e.target);
 
-            if (target.hasClass("fa-ban"))
-            {
-                target.removeClass("fa");
-                target.removeClass("fa-ban");
-                target.removeClass("redCmd");
-                target.addClass("fa-regular");
-                target.addClass("fa-circle");
-                target.addClass("greenCmd");
-                //GrantUserAcess(account);
-            }
-            else {
-                target.removeClass("fa-regular");
-                target.removeClass("fa-circle");
-                target.removeClass("greenCmd");
-                target.removeClass("ban");
-                target.addClass("fa");
-                target.addClass("fa-ban");
-                target.addClass("redCmd");
-                //GrantBanAcess(account);
-            }
-        });
+                if (target.hasClass("fa-ban"))
+                {
+                    target.removeClass("fa");
+                    target.removeClass("fa-ban");
+                    target.removeClass("redCmd");
+                    target.addClass("fa-regular");
+                    target.addClass("fa-circle");
+                    target.addClass("greenCmd");
+                    GrantUserAcess(account);
+                }
+                else {
+                    target.removeClass("fa-regular");
+                    target.removeClass("fa-circle");
+                    target.removeClass("greenCmd");
+                    target.removeClass("ban");
+                    target.addClass("fa");
+                    target.addClass("fa-ban");
+                    target.addClass("redCmd");
+                    GrantBanAcess(account);
+                }
+            });
+
+            $(`#deleteCmd_${accountId}`).on("click", async function() {
+                showAdminConfirmDeleteAccount(account);
+            });
         }
+    }
+}
 
-        $(".right").on("click", (e) => {
-            let target = $(e.target);
+function showAdminConfirmDeleteAccount(account)
+{
+    if (isAdmin(API.retrieveLoggedUser())) {
 
-            if (target.hasClass("fa-user-cog"))
+        startCountdown(); 
+        eraseContent();
+        updateHeader("Retrait de compte");
+        $("#content").append($(`
+        <h3 style="
+        display: flex;
+        justify-content: center;" >Voulez-vous vraiment effacer cette usager?</h3>
+        <div class="UserLayout">
+            ${AccountPicture(account)}
+        </div>
+        <div class="cancel">
+            <button class="form-control btn btn-danger form-control" id="confirmDeleteAccount">Effacer</button>
+        </div>
+        <br>
+        <div class="cancel">
+        <button class="form-control btn-secondary" id="abortCmd">Annuler</button>
+        </div>`));
+        $('#abortCmd').on("click", function () {
+            renderManageUsers();
+        });
+        $('#confirmDeleteAccount').on("click",async function (){
+            let result = await API.unsubscribeAccount(account.id);
+            console.log(result);
+            if(result)
             {
-                target.removeClass("fa-user-cog");
-                target.addClass("fa-user-alt");
-                //GrantUserAcess(account);
+                showLoginForm("Cette uager a été supprimé");
             }
-            else {
-                target.removeClass("fa-user-alt");
-                target.addClass("fa-user-cog");
+            else
+            {
+                console.log(API.currentHttpError);
+                showOffline();
             }
-
-            console.log(target.hasClass("fa-user-cog"));
+    
         });
     }
 }
@@ -756,7 +787,7 @@ async function GrantBanAcess(profil) {
         profil.Authorizations.readAccess = -1;
         profil.Authorizations.writeAccess = -1;
         profil.Password = "";
-        //await API.modifyUserProfilByAdmin(profil);
+        await API.modifyUserProfilByAdmin(profil);
     }
 }
 
@@ -765,7 +796,7 @@ async function GrantAdminAcess(profil) {
         profil.Authorizations.readAccess = 2;
         profil.Authorizations.writeAccess = 2;
         profil.Password = "";
-        //await API.modifyUserProfilByAdmin(profil);
+        await API.modifyUserProfilByAdmin(profil);
     }
 }
 
@@ -774,7 +805,7 @@ async function GrantUserAcess(profil) {
         profil.Authorizations.readAccess = 1;
         profil.Authorizations.writeAccess = 1;
         profil.Password = "";
-        //await API.modifyUserProfilByAdmin(profil);
+        await API.modifyUserProfilByAdmin(profil);
     }
 }
 
