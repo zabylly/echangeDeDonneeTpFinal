@@ -580,6 +580,14 @@ function renderUserAvatar() {
     }
 }
 
+function isAdmin(user) {
+    return user.Authorizations.readAccess == 2 && user.Authorizations.writeAccess == 2;
+}
+
+function isBan() {
+    return user.Authorizations.readAccess == -1 && user.Authorizations.writeAccess == -1;
+}
+
 //menu : le menu change selon la page
 function updateHeader(headerName, menu) {
     //todo
@@ -615,7 +623,7 @@ function updateHeader(headerName, menu) {
     if (user == null) {
         renderAnonymousMenu();
     }
-    else if (user.Authorizations.readAccess == 2 && user.Authorizations.writeAccess == 2) {
+    else if (isAdmin(user)) {
         renderAdminMenu();
     }
     else {
@@ -631,7 +639,7 @@ async function renderManageUsers() {
     {
         showLoginForm();
     }
-    else if (user.Authorizations.readAccess != 2 && user.Authorizations.writeAccess != 2) {
+    else if (!isAdmin(user)) {
         showMainPage();
     }
     else {
@@ -653,10 +661,19 @@ async function renderManageUsers() {
                 let name = account.Name;
 
                 content +=
-                `<i class="UserInfo">
-                <div class="UserAvatar" userid="${userId}"
-                style="background-image:url('${avatar != "" ? avatar : 'images/no-avatar.png'}')"
-                title="${name}"></div>
+                `<i class="UserLayout">
+                    <span class="UserAvatar" userid="${userId}"
+                    style="background-image:url('${avatar != "" ? avatar : 'images/no-avatar.png'}')"
+                    title="${name}"></span>
+                    <span class="UserName">${name}<br>
+                    <span class="UserEmail">${account.Email}</span>
+                    <div>
+                        <span class="fas ${isAdmin(account) ? "fa-user-cog" : "fa-user-alt"} cmdIconVisible dodgerblueCmd"></span>
+                        <span class="${isBan(account) ? "fa fa-ban redCmd" : "fa-regular fa-circle greenCmd" }
+                         cmdIconVisible dodgerblueCmd"></span>
+                        <span class="fas fa-user-slash goldenrodCmd  cmdIconVisible dodgerblueCmd"></span>
+                    </div>
+                    </span>
                 </i>`;
             }
         }
