@@ -131,6 +131,7 @@ class API {
     }
     static modifyUserProfilByAdmin(profil) {
         API.initHttpState();
+        console.log(profil); 
         return new Promise(resolve => {
             $.ajax({
                 url: serverHost + "/Accounts/modifybyadmin/" + profil.Id,

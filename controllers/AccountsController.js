@@ -178,6 +178,11 @@ export default class AccountsController extends Controller {
                     if (user.Password == '') { // password not changed
                         user.Password = foundedUser.Password;
                     }
+
+                    if (user.Avatar == '') { // avatar not changed
+                        user.Avatar = foundedUser.Avatar;
+                    }
+
                     if (user.Email != foundedUser.Email) {
                         user.VerifyCode = utilities.makeVerifyCode(6);
                         this.sendVerificationEmail(user);

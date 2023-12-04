@@ -787,6 +787,7 @@ async function GrantBanAcess(profil) {
         profil.Authorizations.readAccess = -1;
         profil.Authorizations.writeAccess = -1;
         profil.Password = "";
+        profil.Avatar = "";
         await API.modifyUserProfilByAdmin(profil);
     }
 }
@@ -796,6 +797,7 @@ async function GrantAdminAcess(profil) {
         profil.Authorizations.readAccess = 2;
         profil.Authorizations.writeAccess = 2;
         profil.Password = "";
+        profil.Avatar = "";
         await API.modifyUserProfilByAdmin(profil);
     }
 }
@@ -805,6 +807,7 @@ async function GrantUserAcess(profil) {
         profil.Authorizations.readAccess = 1;
         profil.Authorizations.writeAccess = 1;
         profil.Password = "";
+        profil.Avatar = "";
         await API.modifyUserProfilByAdmin(profil);
     }
 }
