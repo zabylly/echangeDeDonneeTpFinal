@@ -129,6 +129,23 @@ class API {
             });
         });
     }
+    static modifyUserProfilByAdmin(profil) {
+        API.initHttpState();
+        return new Promise(resolve => {
+            $.ajax({
+                url: serverHost + "/Accounts/modifyByAdmin/" + profil.Id,
+                type: 'PUT',
+                contentType: 'application/json',
+                headers: API.getBearerAuthorizationToken(),
+                data: JSON.stringify(profil),
+                success: (profil) => {
+                    resolve(profil);
+                },
+                error: xhr => { API.setHttpErrorState(xhr); resolve(false); }
+            });
+        });
+    }
+
     static unsubscribeAccount(userId) {
         API.initHttpState();
         return new Promise(resolve => {

@@ -167,6 +167,39 @@ export default class AccountsController extends Controller {
         } else
             this.HttpContext.response.unAuthorized();
     }
+    // PUT:account/modifyByAdmin body payload[{"Id": 0, "Name": "...", "Email": "...", "Password": "..."}]
+    modifyByAdmin(user) {
+        // empty asset members imply no change and there values will be taken from the stored record
+        if (Authorizations.writeGranted(this.HttpContext, Authorizations.admin())) {
+            if (this.repository != null) {
+                let foundedUser = this.repository.findByField("Id", user.Id);
+                if (foundedUser != null) {
+                    user.VerifyCode = foundedUser.VerifyCode;
+                    if (user.Password == '') { // password not changed
+                        user.Password = foundedUser.Password;
+                    }
+                    if (user.Email != foundedUser.Email) {
+                        user.VerifyCode = utilities.makeVerifyCode(6);
+                        this.sendVerificationEmail(user);
+                    }
+                    let updatedUser = this.repository.update(user.Id, user);
+                    if (this.repository.model.state.isValid) {
+                        this.HttpContext.response.updated(updatedUser);
+                    }
+                    else {
+                        if (this.repository.model.state.inConflict)
+                            this.HttpContext.response.conflict(this.repository.model.state.errors);
+                        else
+                            this.HttpContext.response.badRequest(this.repository.model.state.errors);
+                    }
+                } else
+                    this.HttpContext.response.notFound();
+            } else
+                this.HttpContext.response.notImplemented();
+        } else
+            this.HttpContext.response.unAuthorized();
+    }
+
     // GET:account/remove/id
     remove(id) { // warning! this is not an API endpoint
         if (Authorizations.writeGranted(this.HttpContext, Authorizations.user())) {

@@ -67,7 +67,7 @@ async function login(credential)
         }
         if(serverOnline)//check server connexion
         {
-            if(isBan(userToken))
+            if(userToken && isBan(userToken))
                 loginMessage = "Votre compte à été bannis";
             showLoginForm(loginMessage,email,emailError,passwordError);
         }
@@ -626,7 +626,7 @@ function updateHeader(headerName, menu) {
 
     let user = API.retrieveLoggedUser();
 
-    if (user == null) {
+    if (user == null || user.VerifyCode !== "verified") {
         renderAnonymousMenu();
     }
     else if (isAdmin(user)) {
@@ -668,8 +668,6 @@ async function renderManageUsers() {
                 let isAdministrator = isAdmin(account);
                 let isBlocked = isBan(account);
 
-                console.log(account);
-
                 $("#content").append(                
                     `<i class="UserLayout">
                         <span class="UserAvatar""
@@ -678,8 +676,9 @@ async function renderManageUsers() {
                         <span class="UserName">${name}<br>
                         <span class="UserEmail">${account.Email}</span>
                         <div>
-                            <span id='${isAdministrator ? `user_${accountId}` : `admin_${accountId}`}'
-                             class="fas ${isAdministrator ? "fa-user-cog" : "fa-user-alt"} cmdIconVisible dodgerblueCmd"></span>
+                            <span'
+                             class="fas ${isAdministrator ? "fa-user-cog" : "fa-user-alt"}
+                              cmdIconVisible dodgerblueCmd right"></span>
                             <span class="${isBlocked ? "fa fa-ban redCmd" : "fa-regular fa-circle greenCmd" }
                             cmdIconVisible dodgerblueCmd"></span>
                             <span class="fas fa-user-slash goldenrodCmd  cmdIconVisible dodgerblueCmd"></span>
@@ -687,22 +686,44 @@ async function renderManageUsers() {
                         </span>
                     </i>`
                 );
-
-                $(`#user_${accountId}`).on("click", (e) => {
-                    let target = e.target;
-                    $(target).removeClass("fa-user-alt");
-                    $(target).addClass("fa-user-cog");
-                    GrantAdminAcess(account);
-                });
-
-                $(`#admin_${accountId}`).on("click", (e) => {
-                    let target = e.target;
-                    $(target).removeClass("fa-user-cog");
-                    $(target).addClass("fa-user-alt");
-                    GrantUserAcess(account);
-                });
             }
+
+            
+        $(".right").on("click", (e) => {
+            let target = $(e.target);
+
+            if (target.hasClass("fa-user-cog"))
+            {
+                target.removeClass("fa-user-cog");
+                target.addClass("fa-user-alt");
+                //GrantUserAcess(account);
+            }
+            else {
+                target.removeClass("fa-user-alt");
+                target.addClass("fa-user-cog");
+                //GrantAdminAcess(account);
+            }
+
+            console.log(target.hasClass("fa-user-cog"));
+        });
         }
+
+        $(".right").on("click", (e) => {
+            let target = $(e.target);
+
+            if (target.hasClass("fa-user-cog"))
+            {
+                target.removeClass("fa-user-cog");
+                target.addClass("fa-user-alt");
+                //GrantUserAcess(account);
+            }
+            else {
+                target.removeClass("fa-user-alt");
+                target.addClass("fa-user-cog");
+            }
+
+            console.log(target.hasClass("fa-user-cog"));
+        });
     }
 }
 
@@ -710,7 +731,8 @@ async function GrantAdminAcess(profil) {
     if (isAdmin(API.retrieveLoggedUser())) {
         profil.Authorizations.readAccess = 2;
         profil.Authorizations.writeAccess = 2;
-        //await API.modifyUserProfil(profil);
+        profil.Password = "";
+        //await API.modifyUserProfilByAdmin(profil);
     }
 }
 
@@ -718,7 +740,8 @@ async function GrantUserAcess(profil) {
     if (isAdmin(API.retrieveLoggedUser())) {
         profil.Authorizations.readAccess = 1;
         profil.Authorizations.writeAccess = 1;
-        //await API.modifyUserProfil(profil);
+        profil.Password = "";
+        //await API.modifyUserProfilByAdmin(profil);
     }
 }
 
