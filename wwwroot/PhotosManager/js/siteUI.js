@@ -651,36 +651,70 @@ async function renderManageUsers() {
         let accounts = Object.entries(await API.GetAccounts())[0][1];
     
         let userId = user.Id;
-        let content = "";
     
         for (const account of accounts) {
             let accountId = account.Id;
 
-            if (accountId != user.Id)
+            if (accountId != userId)
             {
                 let avatar = account.Avatar;
 
                 let name = account.Name;
 
-                content +=
-                `<i class="UserLayout">
-                    <span class="UserAvatar" userid="${userId}"
-                    style="background-image:url('${avatar != "" ? avatar : 'images/no-avatar.png'}')"
-                    title="${name}"></span>
-                    <span class="UserName">${name}<br>
-                    <span class="UserEmail">${account.Email}</span>
-                    <div>
-                        <span class="fas ${isAdmin(account) ? "fa-user-cog" : "fa-user-alt"} cmdIconVisible dodgerblueCmd"></span>
-                        <span class="${isBan(account) ? "fa fa-ban redCmd" : "fa-regular fa-circle greenCmd" }
-                         cmdIconVisible dodgerblueCmd"></span>
-                        <span class="fas fa-user-slash goldenrodCmd  cmdIconVisible dodgerblueCmd"></span>
-                    </div>
-                    </span>
-                </i>`;
+                let isAdministrator = isAdmin(account);
+                let isBlocked = isBan(account);
+
+                console.log(account);
+
+                $("#content").append(                
+                    `<i class="UserLayout">
+                        <span class="UserAvatar""
+                        style="background-image:url('${avatar != "" ? avatar : 'images/no-avatar.png'}')"
+                        title="${name}"></span>
+                        <span class="UserName">${name}<br>
+                        <span class="UserEmail">${account.Email}</span>
+                        <div>
+                            <span id='${isAdministrator ? `user_${accountId}` : `admin_${accountId}`}'
+                             class="fas ${isAdministrator ? "fa-user-cog" : "fa-user-alt"} cmdIconVisible dodgerblueCmd"></span>
+                            <span class="${isBlocked ? "fa fa-ban redCmd" : "fa-regular fa-circle greenCmd" }
+                            cmdIconVisible dodgerblueCmd"></span>
+                            <span class="fas fa-user-slash goldenrodCmd  cmdIconVisible dodgerblueCmd"></span>
+                        </div>
+                        </span>
+                    </i>`
+                );
+
+                $(`#user_${accountId}`).on("click", (e) => {
+                    let target = e.target;
+                    $(target).removeClass("fa-user-alt");
+                    $(target).addClass("fa-user-cog");
+                    GrantAdminAcess(account);
+                });
+
+                $(`#admin_${accountId}`).on("click", (e) => {
+                    let target = e.target;
+                    $(target).removeClass("fa-user-cog");
+                    $(target).addClass("fa-user-alt");
+                    GrantUserAcess(account);
+                });
             }
         }
-    
-        $("#content").append(content);
+    }
+}
+
+async function GrantAdminAcess(profil) {
+    if (isAdmin(API.retrieveLoggedUser())) {
+        profil.Authorizations.readAccess = 2;
+        profil.Authorizations.writeAccess = 2;
+        //await API.modifyUserProfil(profil);
+    }
+}
+
+async function GrantUserAcess(profil) {
+    if (isAdmin(API.retrieveLoggedUser())) {
+        profil.Authorizations.readAccess = 1;
+        profil.Authorizations.writeAccess = 1;
+        //await API.modifyUserProfil(profil);
     }
 }
 
