@@ -354,12 +354,15 @@ function showAccountForm(account = null)
 
         if (result)
         {
-            showLoginForm(create ?
-                
-                `votre compte a été créé. Veuillez regarder vos courriels pour réccupérer votre code
-                de vérification qui vous sera demandé lors de votre prochaine connexion.` :
-
-                "votre compte a été modifé avec succès.");
+            if(create)
+            {
+                showLoginForm(`Votre compte a été créé. Veuillez regarder vos courriels pour réccupérer votre code
+                de vérification qui vous sera demandé lors de votre prochaine connexion.`);
+            }
+            else
+            {
+                logout("Votre compte a été modifé avec succès. n'oublier pas de récupérer votre code si vous avez changer votre email.");
+            }
         }
         else
         {
