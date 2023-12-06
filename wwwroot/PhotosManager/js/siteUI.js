@@ -394,6 +394,10 @@ function showOffline()
     <form class="form" id="tryConnexion">
     <input type='submit' name='submit' value="Connexion" class="form-control btn-primary">
     </form>`));
+    $("#tryConnexion").on("click", function (e) {
+        e.preventDefault();
+        showLoginForm();
+    });
     updateHeader("Problème", "problem");
 }
 
@@ -825,7 +829,7 @@ async function GrantUserAcess(profil) {
 }
 
 function renderAbout() {
-    noTimeout();
+    timeout();
     saveContentScrollPosition();
     eraseContent();
     updateHeader("À propos...", "about");
