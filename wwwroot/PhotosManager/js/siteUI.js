@@ -120,12 +120,34 @@ function showLoginForm(loginMessage = "",email = "",emailError="",passwordError 
         //updateHeader("Connecté", "connected");
     });
 }
-function showMainPage()
+async function showMainPage()
 {
     startCountdown();    
     eraseContent();
-    updateHeader("Connecté", "connected");
-    $("#content").append($(`<h2>Vous êtes connecté</h2>`));
+    updateHeader("Liste des photos", "connected");
+    let pictures = Object.entries(await API.GetPhotos())[0][1];
+    console.log(pictures);
+    if(pictures) {
+        $("#content").append($(`<div class="photosLayout">`));
+        for (const picture of pictures)
+        {
+            $("#content").append($(`
+            <div class="photoLayout">
+                <div class="photoTitleContainer">
+                    <div class="photoTitle">${picture.Title}</div>
+                </div>
+                <div class="photoImage" 
+                style="background-image:url('${picture.Image}')"></div>
+                <div class="photoTitleContainer">
+                <div>${toDate(picture.Date)}</div>
+            </div>
+            </div>`))
+        }
+    }
+    else if (API.currentStatus == 0) {
+        showOffline();
+    }
+
 }
 
 //voir lui du account
@@ -137,7 +159,6 @@ function newAccount() {
     account.Email = "";
     return account;
 }
-
 function showVerifyEmail()  {
     startCountdown(); 
     updateHeader("Vérification", "verify");
@@ -949,4 +970,13 @@ function renderAbout() {
                 </p>
             </div>
         `))
+}
+//https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toLocaleTimeString
+function toDate(dateInt)
+{
+    let dateObj = new Date(dateInt);
+    let date = dateObj.toLocaleDateString("fr-FR",{ weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    let heure = dateObj.toLocaleTimeString("fr-FR",{ hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    return date + " @ " + heure;
+
 }
