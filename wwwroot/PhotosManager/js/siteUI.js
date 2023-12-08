@@ -126,6 +126,7 @@ function showMainPage()
     eraseContent();
     updateHeader("Connecté", "connected");
     $("#content").append($(`<h2>Vous êtes connecté</h2>`));
+    showConfirmDeletePicture("d60b6390-95f9-11ee-8cdc-f1b859b6209c");
 }
 
 //voir lui du account
@@ -216,12 +217,14 @@ function showAccountForm(account = null)
     let create = account == null;
     let requiredPassword =create ? "required": "" ;
     if (create) {
+        updateHeader("Inscription", "registerAccount");
         noTimeout();
         account = newAccount();
         account.Avatar = 'images/no-avatar.png';
     }
     else
     {
+        updateHeader("Profil", "editAccount");
         startCountdown();
     }
     eraseContent();
@@ -840,12 +843,14 @@ function showPictureForm(picture = null)
 {
     let create = picture == null;
     if (create) {
+        updateHeader("Ajout de photo", "addPhoto");
         noTimeout();
         picture = newPicture();
         picture.Image = 'images/PhotoCloudLogo.png';
     }
     else
     {
+        updateHeader("Modification de photo", "editPhoto");
         startCountdown();
     }
     eraseContent();
@@ -901,7 +906,7 @@ function showPictureForm(picture = null)
 
         photo.Id = picture.Id;
         photo.OwnerId = picture.OwnerId;
-        photo.Date = create ? Date.now : picture.Date;
+        photo.Date = picture.Date;
 
         //showWaitingGif();
 
