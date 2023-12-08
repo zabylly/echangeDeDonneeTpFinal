@@ -76,9 +76,6 @@ async function login(credential)
             showOffline();
         }
     }
-
-
-    
 }
 function showLoginForm(loginMessage = "",email = "",emailError="",passwordError ="")
 {
@@ -332,7 +329,7 @@ function showAccountForm(account = null)
 
     $("#ProfilForm").on("submit", async function(e) {
         let profil = getFormData($("#ProfilForm"));
-``
+
         if (create)
         {
             delete profil.matchedPassword;
@@ -826,6 +823,107 @@ async function GrantUserAcess(profil) {
         profil.Avatar = "";
         await API.modifyUserProfilByAdmin(profil);
     }
+}
+
+function newPicture() {
+    picture = {};
+    picture.Id = 0;
+    picture.OwnerId = API.retrieveLoggedUser().Id;
+    picture.Title = "";
+    picture.Description = "";
+    picture.Date = Date.now();
+    picture.Shared = false;
+    return picture;
+}
+
+function showPictureForm(picture = null)
+{
+    let create = picture == null;
+    if (create) {
+        noTimeout();
+        picture = newPicture();
+        picture.Image = 'images/PhotoCloudLogo.png';
+    }
+    else
+    {
+        startCountdown();
+    }
+    eraseContent();
+
+    $("#content").append($(`<form class="form" id="PictureForm"'>
+    <input type="hidden" name="Id" value="${picture.Id}"/>
+    <input type="hidden" name="OwnerId" value="${picture.OwnerId}"/>
+    <input type="hidden" name="Date" value="${picture.Date}"/>
+    <fieldset>
+    <legend>Informations</legend>
+    <input type="text"
+    class="form-control Alpha"
+    name="Title"
+    id="Title"
+    placeholder="Titre"
+    required
+    RequireMessage = 'Veuillez entrer un titre'
+    InvalidMessage = 'Titre invalide'
+    value="${picture.Title}"/>
+    <textarea
+    class="form-control AlphaNum"
+    name="Description"
+    id="Description"
+    placeholder="Description"
+    InvalidMessage='Description invalide'></textarea>
+    <input type="checkbox"
+    name="Shared"
+    id="Shared"
+    ${picture.Shared ? "checked" : ""}/>
+    <label for="Shared">Partagée</label>
+    </fieldset>
+    <fieldset>
+    <legend>Image</legend>
+    <div class='imageUploader'
+    newImage='${create}'
+    controlId='Image'
+    imageSrc='${picture.Image}'
+    waitingImage="images/Loading_icon.gif">
+    </div>
+    </fieldset>
+    <input type='submit' name='submit' id='saveUserCmd' value="Enregistrer" class="form-control btn-primary">
+    </form>
+    <div class="cancel">
+    <button class="form-control btn-secondary" id="abortCmd">Annuler</button>
+    </div>`));
+
+    initFormValidation();
+    initImageUploaders();
+
+    $("#PictureForm").on("submit", async function(e) {
+        let photo = getFormData($("#PictureForm"));
+        e.preventDefault();
+
+        photo.Id = picture.Id;
+        photo.OwnerId = picture.OwnerId;
+        photo.Date = picture.Date;
+        //showWaitingGif();
+
+        photo.Shared = photo.Shared != null ? true : false;
+        
+        let result = create ? await API.CreatePhoto(photo) : await API.UpdatePhoto(photo);
+
+        if (result)
+        {
+            showMainPage();
+        }
+        else
+        {
+            console.log(photo);
+            //console.log(API.currentHttpError);
+            //showOffline();
+        }
+
+    });
+
+    $('#abortCmd').on("click", function () {
+        showMainPage();
+    });
 }
 
 function renderAbout() {
