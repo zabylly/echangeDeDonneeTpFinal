@@ -238,12 +238,14 @@ function showAccountForm(account = null)
     let requiredPassword =create ? "required": "" ;
     if (create) {
         noTimeout();
+        updateHeader("Inscription", "registerAccount");
         account = newAccount();
         account.Avatar = 'images/no-avatar.png';
     }
     else
     {
         startCountdown();
+        updateHeader("Profil", "editAccount");
     }
     eraseContent();
 
@@ -862,12 +864,14 @@ function showPictureForm(picture = null)
     let create = picture == null;
     if (create) {
         noTimeout();
+        updateHeader("Ajout de photo", "addPhoto");
         picture = newPicture();
         picture.Image = 'images/PhotoCloudLogo.png';
     }
     else
     {
         startCountdown();
+        updateHeader("Modification de photo", "editPhoto");
     }
     eraseContent();
 
@@ -923,6 +927,7 @@ function showPictureForm(picture = null)
         photo.Id = picture.Id;
         photo.OwnerId = picture.OwnerId;
         photo.Date = picture.Date;
+
         //showWaitingGif();
 
         photo.Shared = photo.Shared != null ? true : false;
@@ -935,9 +940,8 @@ function showPictureForm(picture = null)
         }
         else
         {
-            console.log(photo);
-            //console.log(API.currentHttpError);
-            //showOffline();
+            console.log(API.currentHttpError);
+            showOffline();
         }
 
     });
