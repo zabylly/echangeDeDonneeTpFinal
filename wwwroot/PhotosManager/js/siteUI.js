@@ -128,18 +128,21 @@ async function showMainPage()
     let pictures = Object.entries(await API.GetPhotos())[0][1];
     console.log(pictures);
     if(pictures) {
-        $("#content").append($(`<div class="photosLayout">`));
+        $("#content").append($(`</div><div class="photosLayout">`));
         for (const picture of pictures)
         {
             $("#content").append($(`
+
             <div class="photoLayout">
                 <div class="photoTitleContainer">
                     <div class="photoTitle">${picture.Title}</div>
+                    <div><i class="cmdIcon fa fa-trash"></i></div>
+                    <div><i class="cmdIcon fa fa-edit"></i></div>
                 </div>
                 <div class="photoImage" 
                 style="background-image:url('${picture.Image}')"></div>
                 <div class="photoTitleContainer">
-                <div>${toDate(picture.Date)}</div>
+                <div class="photoDate">${toDate(picture.Date)}</div>
             </div>
             </div>`))
         }
@@ -150,15 +153,7 @@ async function showMainPage()
 
 }
 
-//voir lui du account
-function newAccount() {
-    account = {};
-    account.Id = 0;
-    account.Name = "";
-    account.Phone = "";
-    account.Email = "";
-    return account;
-}
+
 function showVerifyEmail()  {
     startCountdown(); 
     updateHeader("Vérification", "verify");
@@ -422,14 +417,7 @@ function showOffline()
 }
 
 //voir lui du account
-function getFormData($form) {
-    const removeTag = new RegExp("(<[a-zA-Z0-9]+>)|(</[a-zA-Z0-9]+>)", "g");
-    var jsonObject = {};
-    $.each($form.serializeArray(), (index, control) => {
-        jsonObject[control.name] = control.value.replace(removeTag, "");
-    });
-    return jsonObject;
-}
+
 
 function showWaitingGif() {
     eraseContent();
@@ -615,13 +603,7 @@ function renderUserAvatar() {
     }
 }
 
-function isAdmin(user) {
-    return user.Authorizations.readAccess == 2 && user.Authorizations.writeAccess == 2;
-}
 
-function isBan(user) {
-    return user.Authorizations.readAccess == -1 && user.Authorizations.writeAccess == -1;
-}
 
 //menu : le menu change selon la page
 function updateHeader(headerName, menu) {
@@ -633,7 +615,7 @@ function updateHeader(headerName, menu) {
                 <img src="images/PhotoCloudLogo.png" class="appLogo">
             </span>
             <span class="viewTitle">${headerName}
-                <div class="cmdIcon fa fa-plus" id="newPhotoCmd" title="Ajouter une photo" style="display: none;"></div>
+                <div class="cmdIcon fa fa-plus" id="newPhotoCmd" title="Ajouter une photo" style="${menu == "connected" ? "":"display: none"}"></div>
             </span>        
             <div class="headerMenusContainer">
                 <span>&nbsp;</span> <!--filler-->
@@ -665,17 +647,6 @@ function updateHeader(headerName, menu) {
         renderUserMenu();
     }
 }
-
-function AccountPicture(account) {
-    let avatar = account.Avatar;
-    let name = account.Name;
-    return `<span class="UserAvatar"
-    style="background-image:url('${avatar.slice(avatar.lastIndexOf("/") + 1) != "" ? avatar : 'images/no-avatar.png'}')"
-    title="${name}"></span>
-    <span class="UserContainer">
-    <span class="UserName">${name}</span>`    
-}
-
 async function renderManageUsers() {
     timeout();
     let user = API.retrieveLoggedUser();
@@ -827,38 +798,6 @@ async function GrantBanAcess(profil) {
         await API.modifyUserProfilByAdmin(profil);
     }
 }
-
-async function GrantAdminAcess(profil) {
-    if (isAdmin(API.retrieveLoggedUser())) {
-        profil.Authorizations.readAccess = 2;
-        profil.Authorizations.writeAccess = 2;
-        profil.Password = "";
-        profil.Avatar = "";
-        await API.modifyUserProfilByAdmin(profil);
-    }
-}
-
-async function GrantUserAcess(profil) {
-    if (isAdmin(API.retrieveLoggedUser())) {
-        profil.Authorizations.readAccess = 1;
-        profil.Authorizations.writeAccess = 1;
-        profil.Password = "";
-        profil.Avatar = "";
-        await API.modifyUserProfilByAdmin(profil);
-    }
-}
-
-function newPicture() {
-    picture = {};
-    picture.Id = 0;
-    picture.OwnerId = API.retrieveLoggedUser().Id;
-    picture.Title = "";
-    picture.Description = "";
-    picture.Date = Date.now();
-    picture.Shared = false;
-    return picture;
-}
-
 function showPictureForm(picture = null)
 {
     let create = picture == null;
@@ -975,12 +914,4 @@ function renderAbout() {
             </div>
         `))
 }
-//https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toLocaleTimeString
-function toDate(dateInt)
-{
-    let dateObj = new Date(dateInt);
-    let date = dateObj.toLocaleDateString("fr-FR",{ weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-    let heure = dateObj.toLocaleTimeString("fr-FR",{ hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    return date + " @ " + heure;
 
-}

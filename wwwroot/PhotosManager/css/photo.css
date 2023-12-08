@@ -40,6 +40,10 @@
     font-weight: bold;
     color:rgb(0, 87, 204);
 }
+.photoDate {
+    font-size: 13px;
+    color:rgb(0, 87, 204);
+}
 
 .photoDetailsOwner {
     display:grid;
