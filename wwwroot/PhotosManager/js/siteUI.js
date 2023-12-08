@@ -901,7 +901,8 @@ function showPictureForm(picture = null)
 
         photo.Id = picture.Id;
         photo.OwnerId = picture.OwnerId;
-        photo.Date = picture.Date;
+        photo.Date = create ? Date.now : picture.Date;
+
         //showWaitingGif();
 
         photo.Shared = photo.Shared != null ? true : false;
@@ -914,9 +915,8 @@ function showPictureForm(picture = null)
         }
         else
         {
-            console.log(photo);
-            //console.log(API.currentHttpError);
-            //showOffline();
+            console.log(API.currentHttpError);
+            showOffline();
         }
 
     });
