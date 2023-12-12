@@ -145,7 +145,7 @@ async function showMainPage()
         }
         case "ownerOnly":
         {
-            let queryString = `?OwnerId=${API.retrieveLoggedUser().Id}`;
+            queryString = `?OwnerId=${API.retrieveLoggedUser().Id}`;
             break;
         }
     }
@@ -571,6 +571,9 @@ function renderUserMenu() {
     $('#editProfilCmd').on("click",function(){
         showAccountForm(API.retrieveLoggedUser());
     });
+    $("#listPhotosMenuCmd").on("click", () => {
+        showMainPage();
+    });
     $('#aboutCmd').on("click", function () {
         renderAbout();
     });
@@ -614,6 +617,9 @@ function renderAdminMenu() {
     });
     $('#editProfilCmd').on("click",function(){
         showAccountForm(API.retrieveLoggedUser());
+    });
+    $("#listPhotosMenuCmd").on("click", () => {
+        showMainPage();
     });
     $('#manageUserCmd').on("click", function () {
         renderManageUsers();
@@ -690,16 +696,14 @@ function updateHeader(headerName, menu) {
         renderAdminMenu();
 
         $("#listPhotosCmd").on("click", () => {
-            if (API.retrieveLoggedUser() != null)
-                showMainPage();
+            showMainPage();
         });
     }
     else {
         renderUserMenu();
 
         $("#listPhotosCmd").on("click", () => {
-            if (API.retrieveLoggedUser() != null)
-                showMainPage();
+            showMainPage();
         });
     }
     $("#newPhotoCmd").on("click", (e) => {
