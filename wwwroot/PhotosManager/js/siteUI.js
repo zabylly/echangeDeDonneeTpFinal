@@ -145,7 +145,7 @@ async function showMainPage()
         }
         case "ownerOnly":
         {
-            let queryString = `?OwnerId=${API.retrieveLoggedUser().Id}`;
+            queryString = `?OwnerId=${API.retrieveLoggedUser().Id}`;
             break;
         }
     }
@@ -162,8 +162,8 @@ async function showMainPage()
             <div class="photoLayout">
                 <div class="photoTitleContainer">
                     <div class="photoTitle">${picture.Title}</div>
-                    ${isOwner?`<div><i id="${picture.Id}" class="cmdIcon fa fa-trash deletePicture"></i></div>
-                    <div><i class="cmdIcon fa fa-edit"></i></div>`:""}
+                    <div><i id="${picture.Id}" class="cmdIcon fa fa-trash deletePicture" ></i></div>
+                    <div><i id="${picture.Id}" class="cmdIcon fa fa-edit editPicture"></i></div>
                 </div>
                 <div class="photoImage" 
                 style="background-image:url('${picture.Image}')"></div>
@@ -187,9 +187,19 @@ async function showMainPage()
                 showConfirmDeletePicture(picture);
             }
         });
-        $(`.LikeCmd`).click(async function() {
-            var idPicture= $(this).attr('idPicture');
-            await API.CreateLike({PhotoId: idPicture,UserId: API.retrieveLoggedUser().Id});
+
+        $(`.editPicture`).on("click", async function(e) {
+            let picture = await API.GetPhotosById($(e.target)[0].id);
+
+            let user = API.retrieveLoggedUser();
+            if (picture.OwnerId == user.Id || isAdmin(user)) {
+                console.log("test");
+                showPictureForm(picture);
+            }
+        });
+        $(`.LikeCmd`).click(function() {
+            let idPicture= $(this).attr('idPicture');
+            API.CreateLike({PhotoId: idPicture,UserId: API.retrieveLoggedUser().Id});
             showMainPage();
         });
 
@@ -565,6 +575,9 @@ function renderUserMenu() {
     $('#editProfilCmd').on("click",function(){
         showAccountForm(API.retrieveLoggedUser());
     });
+    $("#listPhotosMenuCmd").on("click", () => {
+        showMainPage();
+    });
     $('#aboutCmd').on("click", function () {
         renderAbout();
     });
@@ -608,6 +621,9 @@ function renderAdminMenu() {
     });
     $('#editProfilCmd').on("click",function(){
         showAccountForm(API.retrieveLoggedUser());
+    });
+    $("#listPhotosMenuCmd").on("click", () => {
+        showMainPage();
     });
     $('#manageUserCmd').on("click", function () {
         renderManageUsers();
@@ -684,16 +700,14 @@ function updateHeader(headerName, menu) {
         renderAdminMenu();
 
         $("#listPhotosCmd").on("click", () => {
-            if (API.retrieveLoggedUser() != null)
-                showMainPage();
+            showMainPage();
         });
     }
     else {
         renderUserMenu();
 
         $("#listPhotosCmd").on("click", () => {
-            if (API.retrieveLoggedUser() != null)
-                showMainPage();
+            showMainPage();
         });
     }
     $("#newPhotoCmd").on("click", (e) => {
@@ -919,7 +933,7 @@ function showPictureForm(picture = null)
         e.preventDefault();
         let picture = photo.Image;
 
-        if (picture.slice(picture.lastIndexOf("/") + 1) == "")
+        if (create && picture.slice(picture.lastIndexOf("/") + 1) == "")
         {
             $("#requireImage").show();
         }
