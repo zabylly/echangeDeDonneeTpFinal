@@ -168,7 +168,7 @@ async function showMainPage()
                 <div class="photoTitleContainer">
                     <div class="photoDate">${toDate(picture.Date)}</div>
                     <div>${picture.likes.length}</div>
-                    <div id="${picture.Id}" class=LikeCmd title="Ajouter une photo"><i  style="margin: unset;" class="cmdIcon fa-regular fa-thumbs-up"></i></div>
+                    <div idPicture="${picture.Id}" class="LikeCmd" title="Ajouter une photo"><i  style="margin: unset;" class="cmdIcon fa-regular fa-thumbs-up"></i></div>
                 </div>
             </div>`;
         }
@@ -183,6 +183,12 @@ async function showMainPage()
                 showConfirmDeletePicture(picture);
             }
         });
+        $(`.LikeCmd`).click(function() {
+            var idPicture= $(this).attr('idPicture');
+            API.CreateLike({PhotoId: idPicture,UserId: API.retrieveLoggedUser().Id});
+            showMainPage();
+        });
+
     }
     else if (API.currentStatus == 0) {
         showOffline();

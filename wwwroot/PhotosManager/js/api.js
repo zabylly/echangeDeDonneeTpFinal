@@ -2,6 +2,7 @@
 
 const serverHost = "http://localhost:5000";
 const photos_API = "/api/photos";
+const likes_API = "/api/likes";
 
 class API {
     static initHttpState() {
@@ -254,6 +255,20 @@ class API {
                 type: 'DELETE',
                 headers: API.getBearerAuthorizationToken(),
                 success: () => { resolve(true) },
+                error: xhr => { API.setHttpErrorState(xhr); resolve(false); }
+            });
+        });
+    }
+    static CreateLike(data) {
+        API.initHttpState();
+        return new Promise(resolve => {
+            $.ajax({
+                url: serverHost + likes_API,
+                type: 'POST',
+                headers: API.getBearerAuthorizationToken(),
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: data => { resolve(data) },
                 error: xhr => { API.setHttpErrorState(xhr); resolve(false); }
             });
         });
