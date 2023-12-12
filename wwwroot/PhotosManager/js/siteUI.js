@@ -160,7 +160,7 @@ async function showMainPage()
             <div class="photoLayout">
                 <div class="photoTitleContainer">
                     <div class="photoTitle">${picture.Title}</div>
-                    <div><i class="cmdIcon fa fa-trash"></i></div>
+                    <div><i id="${picture.Id}" class="cmdIcon fa fa-trash deletePicture" ></i></div>
                     <div><i class="cmdIcon fa fa-edit"></i></div>
                 </div>
                 <div class="photoImage" 
@@ -172,6 +172,15 @@ async function showMainPage()
         }
         content +=`</div>`;
         $("#content").append($(content));
+
+        $(`.deletePicture`).on("click", async function(e) {
+            let picture = await API.GetPhotosById($(e.target)[0].id);
+
+            let user = API.retrieveLoggedUser();
+            if (picture.OwnerId == user.Id || isAdmin(user)) {
+                showConfirmDeletePicture(picture);
+            }
+        });
     }
     else if (API.currentStatus == 0) {
         showOffline();
@@ -222,6 +231,7 @@ function showVerifyEmail()  {
 function showConfirmDeleteAccount()
 {
     startCountdown(); 
+    updateHeader("Retrait de compte", "deleteAccount");
     eraseContent();
     $("#content").append($(`
     <h3 style="
@@ -886,6 +896,7 @@ function showPictureForm(picture = null)
     imageSrc='${picture.Image}'
     waitingImage="images/Loading_icon.gif">
     </div>
+    <div id="requireImage" class="form-control" style="display:none; color:red; border:none;">Veuillez uploader une image</div>
     </fieldset>
     <input type='submit' name='submit' id='saveUserCmd' value="Enregistrer" class="form-control btn-primary">
     </form>
@@ -899,18 +910,70 @@ function showPictureForm(picture = null)
     $("#PictureForm").on("submit", async function(e) {
         let photo = getFormData($("#PictureForm"));
         e.preventDefault();
+        let picture = photo.Image;
 
-        photo.Id = picture.Id;
-        photo.OwnerId = picture.OwnerId;
-        photo.Date = picture.Date;
+        if (picture.slice(picture.lastIndexOf("/") + 1) == "")
+        {
+            $("#requireImage").show();
+        }
+        else {
 
-        //showWaitingGif();
+            photo.Id = picture.Id;
+            photo.OwnerId = picture.OwnerId;
+            photo.Date = picture.Date;
+    
+            //showWaitingGif();
+    
+            photo.Shared = photo.Shared != null ? true : false;
+            
+            let result = create ? await API.CreatePhoto(photo) : await API.UpdatePhoto(photo);
+    
+            if (result)
+            {
+                showMainPage();
+            }
+            else
+            {
+                console.log(API.currentHttpError);
+                showOffline();
+            }
+        }
+    });
 
-        photo.Shared = photo.Shared != null ? true : false;
-        
-        let result = create ? await API.CreatePhoto(photo) : await API.UpdatePhoto(photo);
+    $('#abortCmd').on("click", function () {
+        showMainPage();
+    });
+}
 
-        if (result)
+function showConfirmDeletePicture(picture)
+{
+    startCountdown(); 
+    updateHeader("Retrait de photo", "deletePicture");
+
+    eraseContent();
+    $("#content").append($(`
+    <h3 style="
+    display: flex;
+    justify-content: center;" >Voulez-vous vraiment effacer cette photo?</h3>
+    <h5 class="photoTitle">${picture.Title}</h5>
+    <div class="photoImage"
+        style="background-image:url('${picture.Image}')">
+    </div>
+
+    <div class="cancel">
+        <button class="form-control btn btn-danger form-control" id="confirmDeleteAccount">Effacer la photo</button>
+    </div>
+    <br>
+    <div class="cancel">
+    <button class="form-control btn-secondary" id="abortCmd">Annuler</button>
+    </div>`));
+    $('#abortCmd').on("click", function () {
+        showMainPage();
+    });
+    $('#confirmDeleteAccount').on("click",async function (){
+        let result = await API.unsubscribeAccount(API.retrieveLoggedUser().Id);
+        console.log(result);
+        if(result)
         {
             showMainPage();
         }
@@ -922,9 +985,6 @@ function showPictureForm(picture = null)
 
     });
 
-    $('#abortCmd').on("click", function () {
-        showMainPage();
-    });
 }
 
 function renderAbout() {
