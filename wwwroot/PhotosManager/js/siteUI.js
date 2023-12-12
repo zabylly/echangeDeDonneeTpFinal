@@ -892,6 +892,8 @@ function showPictureForm(picture = null)
     initFormValidation();
     initImageUploaders();
 
+    let original = picture;
+    
     $("#PictureForm").on("submit", async function(e) {
         let photo = getFormData($("#PictureForm"));
         e.preventDefault();
@@ -903,9 +905,9 @@ function showPictureForm(picture = null)
         }
         else {
 
-            photo.Id = picture.Id;
-            photo.OwnerId = picture.OwnerId;
-            photo.Date = picture.Date;
+            photo.Id = original.Id;
+            photo.OwnerId = original.OwnerId;
+            photo.Date = Date.now();
     
             //showWaitingGif();
     
@@ -955,8 +957,10 @@ function showConfirmDeletePicture(picture)
     $('#abortCmd').on("click", function () {
         showMainPage();
     });
+
+    let original = picture;
     $('#confirmDeleteAccount').on("click",async function (){
-        let result = await API.unsubscribeAccount(API.retrieveLoggedUser().Id);
+        let result = await API.DeletePhoto(original.Id);
         console.log(result);
         if(result)
         {
