@@ -150,25 +150,29 @@ async function showMainPage()
         }
     }
     let pictures = Object.entries(await API.GetPhotos(queryString))[0][1];
-    console.log(pictures);
     if(pictures) {
         content += `<div class="photosLayout">`;
         for (const picture of pictures)
         {
+            isOwner = API.retrieveLoggedUser().Id == picture.OwnerId;
+            isLiked = picture.likes.some(obj => obj["UserId"] === API.retrieveLoggedUser().Id);
+            console.log(isLiked);
             content +=`
 
             <div class="photoLayout">
                 <div class="photoTitleContainer">
                     <div class="photoTitle">${picture.Title}</div>
-                    <div><i id="${picture.Id}" class="cmdIcon fa fa-trash deletePicture" ></i></div>
-                    <div><i class="cmdIcon fa fa-edit"></i></div>
+                    ${isOwner?`<div><i id="${picture.Id}" class="cmdIcon fa fa-trash deletePicture"></i></div>
+                    <div><i class="cmdIcon fa fa-edit"></i></div>`:""}
                 </div>
                 <div class="photoImage" 
                 style="background-image:url('${picture.Image}')"></div>
                 <div class="photoTitleContainer">
                     <div class="photoDate">${toDate(picture.Date)}</div>
                     <div>${picture.likes.length}</div>
-                    <div idPicture="${picture.Id}" class="LikeCmd" title="Ajouter une photo"><i  style="margin: unset;" class="cmdIcon fa-regular fa-thumbs-up"></i></div>
+                    <div idPicture="${picture.Id}" class="${isLiked?'UnlikeCmd':'LikeCmd'}" title="Ajouter une photo">
+                        <i style="margin: unset;" class="cmdIcon "${isLiked?'fa fa-thumbs-up':'fa-regular fa-thumbs-up'}"></i>
+                    </div>
                 </div>
             </div>`;
         }
@@ -183,9 +187,9 @@ async function showMainPage()
                 showConfirmDeletePicture(picture);
             }
         });
-        $(`.LikeCmd`).click(function() {
+        $(`.LikeCmd`).click(async function() {
             var idPicture= $(this).attr('idPicture');
-            API.CreateLike({PhotoId: idPicture,UserId: API.retrieveLoggedUser().Id});
+            await API.CreateLike({PhotoId: idPicture,UserId: API.retrieveLoggedUser().Id});
             showMainPage();
         });
 
