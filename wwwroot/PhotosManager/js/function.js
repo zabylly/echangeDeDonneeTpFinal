@@ -30,6 +30,13 @@ function AccountPicture(account) {
     <span class="UserContainer">
     <span class="UserName">${name}</span>`    
 }
+function AccountPicture(avatar, name) {
+    return `<span class="UserAvatar"
+    style="background-image:url('${avatar.slice(avatar.lastIndexOf("/") + 1) != "" ? avatar : 'images/no-avatar.png'}')"
+    title="${name}"></span>
+    <span class="UserContainer">
+    <span class="UserName">${name}</span>`    
+}
 async function GrantAdminAcess(profil) {
     if (isAdmin(API.retrieveLoggedUser())) {
         profil.Authorizations.readAccess = 2;
