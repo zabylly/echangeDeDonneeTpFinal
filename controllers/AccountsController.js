@@ -1,4 +1,5 @@
 import TokenModel from '../models/token.js';
+import PhotoModel from '../models/photo.js';
 import UserModel from '../models/user.js';
 import Repository from '../models/repository.js';
 import TokenManager from '../tokensManager.js';
@@ -11,6 +12,7 @@ export default class AccountsController extends Controller {
     constructor(HttpContext) {
         super(HttpContext, new Repository(new UserModel()), Authorizations.admin());
         this.tokensRepository = new Repository(new TokenModel());
+        this.photosRepository = new Repository(new PhotoModel());
     }
     index(id) {
         if (id != undefined) {
@@ -212,6 +214,7 @@ export default class AccountsController extends Controller {
     remove(id) { // warning! this is not an API endpoint
         if (Authorizations.writeGranted(this.HttpContext, Authorizations.user())) {
             this.tokensRepository.keepByFilter(token => token.User.Id != id);
+            this.photosRepository.keepByFilter(photo => photo.OwnerId != id);
             let previousAuthorization = this.authorizations;
             this.authorizations = Authorizations.user();
             super.remove(id);

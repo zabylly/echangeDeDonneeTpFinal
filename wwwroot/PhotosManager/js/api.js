@@ -203,7 +203,7 @@ class API {
             });
         });
     }
-    static GetPhotos(queryString = null) {
+    static GetPhotos(queryString = "") {
         let url = serverHost + photos_API + (queryString ? queryString : "");
         return new Promise(resolve => {
             $.ajax({

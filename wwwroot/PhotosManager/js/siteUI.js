@@ -1,4 +1,4 @@
-
+let filter = "sortByDate";
 initTimeout(120,()=>{
     logout("Votre session est expirée. Veuillez vous reconnecter");
  });   
@@ -122,16 +122,40 @@ function showLoginForm(loginMessage = "",email = "",emailError="",passwordError 
 }
 async function showMainPage()
 {
+    let queryString = "";
+    let content = "";
     startCountdown();    
     eraseContent();
     updateHeader("Liste des photos", "connected");
-    let pictures = Object.entries(await API.GetPhotos())[0][1];
+    switch(filter)
+    {
+        case "sortByDate":
+        {
+            queryString = "?sort=Date,desc";
+            break;
+        }
+        case "sortByOwners":
+        {
+            queryString = "?sort=OwnerId";
+            break;
+        }
+        case "sortByLikes":
+        {
+            break;
+        }
+        case "ownerOnly":
+        {
+            let queryString = `?OwnerId=${API.retrieveLoggedUser().Id}`;
+            break;
+        }
+    }
+    let pictures = Object.entries(await API.GetPhotos(queryString))[0][1];
     console.log(pictures);
     if(pictures) {
-        $("#content").append($(`</div><div class="photosLayout">`));
+        content += `<div class="photosLayout">`;
         for (const picture of pictures)
         {
-            $("#content").append($(`
+            content +=`
 
             <div class="photoLayout">
                 <div class="photoTitleContainer">
@@ -144,8 +168,10 @@ async function showMainPage()
                 <div class="photoTitleContainer">
                 <div class="photoDate">${toDate(picture.Date)}</div>
             </div>
-            </div>`))
+            </div>`;
         }
+        content +=`</div>`;
+        $("#content").append($(content));
     }
     else if (API.currentStatus == 0) {
         showOffline();
@@ -415,10 +441,6 @@ function showOffline()
     });
     updateHeader("Problème", "problem");
 }
-
-//voir lui du account
-
-
 function showWaitingGif() {
     eraseContent();
     $("#content").append($("<div class='waitingGifcontainer'><img class='waitingGif' src='images/Loading_icon.gif' /></div>'"));
@@ -432,7 +454,6 @@ function saveContentScrollPosition() {
 function restoreContentScrollPosition() {
     $("#content")[0].scrollTop = contentScrollPosition;
 }
-
 function renderAnonymousMenu() {
     $("#contextualMenu").empty();
     $("#contextualMenu").append(
@@ -455,7 +476,44 @@ function renderAnonymousMenu() {
         showLoginForm();
     });
 }
+function renderFilterMenu()
+{
+    console.log(filter);
+    $("#contextualMenu").append(
+        $(`
+            <div class="dropdown-divider"></div>
+            <span class="dropdown-item" id="listPhotosMenuCmd">
+                <i class="menuIcon fa fa-image mx-2"></i> Liste des photos
+            </span>
 
+            <div class="dropdown-divider"></div>
+            <span class="dropdown-item filter" id="sortByDateCmd">
+            <i class="menuIcon fa fa-${filter == "sortByDate"?"check":"fw" } mx-2"></i>
+                <i class="menuIcon fa fa-calendar mx-2"></i>
+                Photos par date de création
+            </span>
+            <span class="dropdown-item filter" id="sortByOwnersCmd">
+                <i class="menuIcon fa fa-${filter == "sortByOwners"?"check":"fw" } mx-2"></i>
+                <i class="menuIcon fa fa-users mx-2"></i>
+                Photos par créateur
+            </span>
+            <span class="dropdown-item filter" id="sortByLikesCmd">
+            <i class="menuIcon fa fa-${filter == "sortByLikes"?"check":"fw" } mx-2"></i>
+                <i class="menuIcon fa fa-user mx-2"></i>
+                Photos les plus aimées
+            </span>
+            <span class="dropdown-item filter" id="ownerOnlyCmd">
+            <i class="menuIcon fa fa-${filter == "ownerOnly"?"check":"fw" } mx-2"></i>
+                <i class="menuIcon fa fa-user mx-2"></i>
+                Mes photos
+            </span>       
+        `)
+    );
+    $('.filter').on("click",function(){
+        filter = $(this).attr('id').replace("Cmd","");
+        showMainPage();
+    });
+}
 function renderUserMenu() {
     $("#contextualMenu").empty();
     $("#contextualMenu").append(
@@ -466,34 +524,11 @@ function renderUserMenu() {
             <span class="dropdown-item" id="editProfilCmd">
                 <i class="menuIcon fa fa-user-edit mx-2"></i> Modifier votre profil
             </span>
-
-            <div class="dropdown-divider"></div>
-            <span class="dropdown-item" id="listPhotosMenuCmd">
-                <i class="menuIcon fa fa-image mx-2"></i> Liste des photos
-            </span>
-
-            <div class="dropdown-divider"></div>
-            <span class="dropdown-item" id="sortByDateCmd">
-                <i class="menuIcon fa fa-check mx-2"></i>
-                <i class="menuIcon fa fa-calendar mx-2"></i>
-                Photos par date de création
-            </span>
-            <span class="dropdown-item" id="sortByOwnersCmd">
-                <i class="menuIcon fa fa-fw mx-2"></i>
-                <i class="menuIcon fa fa-users mx-2"></i>
-                Photos par créateur
-            </span>
-            <span class="dropdown-item" id="sortByLikesCmd">
-                <i class="menuIcon fa fa-fw mx-2"></i>
-                <i class="menuIcon fa fa-user mx-2"></i>
-                Photos les plus aiméés
-            </span>
-            <span class="dropdown-item" id="ownerOnlyCmd">
-                <i class="menuIcon fa fa-fw mx-2"></i>
-                <i class="menuIcon fa fa-user mx-2"></i>
-                Mes photos
-            </span>
-
+        `)
+    ); 
+    renderFilterMenu();
+    $("#contextualMenu").append(
+        $(`
             <div class="dropdown-divider"></div>
             <span class="dropdown-item" id="aboutCmd">
                 <i class="menuIcon fa fa-info-circle mx-2"></i> À propos...
@@ -646,6 +681,9 @@ function updateHeader(headerName, menu) {
     else {
         renderUserMenu();
     }
+    $("#newPhotoCmd").on("click", (e) => {
+        showPictureForm();
+    });
 }
 async function renderManageUsers() {
     timeout();
@@ -801,15 +839,14 @@ async function GrantBanAcess(profil) {
 function showPictureForm(picture = null)
 {
     let create = picture == null;
+    startCountdown();
     if (create) {
-        noTimeout();
         updateHeader("Ajout de photo", "addPhoto");
         picture = newPicture();
         picture.Image = 'images/PhotoCloudLogo.png';
     }
     else
     {
-        startCountdown();
         updateHeader("Modification de photo", "editPhoto");
     }
     eraseContent();

@@ -3,6 +3,7 @@ import { v1 as uuidv1 } from "uuid";
 import * as utilities from "../utilities.js";
 import { log } from "../log.js";
 import CollectionFilter from "./collectionFilter.js";
+import PermissionFilter from "./permissionFilter.js";
 import RepositoryCachesManager from "./repositoryCachesManager.js";
 import CachedRequests from "../CachedRequestsManager.js";
 
@@ -129,8 +130,10 @@ export default class Repository {
         return false;
     }
     getAll(params = null) {
-        let collectionFilter = new CollectionFilter(this.objects(), params);//, this.model);
-        let objectsList = collectionFilter.get();
+        let permissionFilter = new PermissionFilter(this.objects(),params,this.model);
+        let objectsList = permissionFilter.get();
+        let collectionFilter = new CollectionFilter(objectsList, params);//, this.model); 
+        objectsList = collectionFilter.get();
         let bindedDatas = [];
         if (objectsList)
             for (let data of objectsList) {
