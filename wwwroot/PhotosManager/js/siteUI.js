@@ -194,7 +194,7 @@ async function showMainPage()
             }
         });
         $(`.LikeCmd`).click(function() {
-            var idPicture= $(this).attr('idPicture');
+            let idPicture= $(this).attr('idPicture');
             API.CreateLike({PhotoId: idPicture,UserId: API.retrieveLoggedUser().Id});
             showMainPage();
         });
