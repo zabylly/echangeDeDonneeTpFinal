@@ -161,7 +161,7 @@ async function showMainPage()
                 <div class="photoTitleContainer">
                     <div class="photoTitle">${picture.Title}</div>
                     <div><i id="${picture.Id}" class="cmdIcon fa fa-trash deletePicture" ></i></div>
-                    <div><i class="cmdIcon fa fa-edit"></i></div>
+                    <div><i id="${picture.Id}" class="cmdIcon fa fa-edit editPicture"></i></div>
                 </div>
                 <div class="photoImage" 
                 style="background-image:url('${picture.Image}')"></div>
@@ -181,6 +181,16 @@ async function showMainPage()
             let user = API.retrieveLoggedUser();
             if (picture.OwnerId == user.Id || isAdmin(user)) {
                 showConfirmDeletePicture(picture);
+            }
+        });
+
+        $(`.editPicture`).on("click", async function(e) {
+            let picture = await API.GetPhotosById($(e.target)[0].id);
+
+            let user = API.retrieveLoggedUser();
+            if (picture.OwnerId == user.Id || isAdmin(user)) {
+                console.log("test");
+                showPictureForm(picture);
             }
         });
     }
@@ -909,7 +919,7 @@ function showPictureForm(picture = null)
         e.preventDefault();
         let picture = photo.Image;
 
-        if (picture.slice(picture.lastIndexOf("/") + 1) == "")
+        if (create && picture.slice(picture.lastIndexOf("/") + 1) == "")
         {
             $("#requireImage").show();
         }
