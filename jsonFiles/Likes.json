@@ -1,0 +1,17 @@
+[
+    {
+        "Id": "f17b9811-9901-11ee-bf3b-4785d45d74d2",
+        "PhotoId": "8a1e2aa0-9881-11ee-8ccd-23ccac05351f",
+        "UserId": "3a494110-9212-11ee-af02-63c7c0f539e4"
+    },
+    {
+        "Id": "6c4e9e20-9902-11ee-8c12-d718eb7f5fb7",
+        "PhotoId": "8a1e2aa0-9881-11ee-8ccd-23ccac05351f",
+        "UserId": "3a494110-9212-11ee-af02-63c7c0f539e4"
+    },
+    {
+        "Id": "8d5ada70-9902-11ee-ac5e-cb3aec707aba",
+        "PhotoId": "699464c0-9881-11ee-8ccd-23ccac05351f",
+        "UserId": "3a494110-9212-11ee-af02-63c7c0f539e4"
+    }
+]

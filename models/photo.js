@@ -1,5 +1,6 @@
 import Model from './model.js';
 import UserModel from './user.js';
+import LikeModel from './like.js';
 import Repository from '../models/repository.js';
 
 export default class Photo extends Model {
@@ -22,6 +23,10 @@ export default class Photo extends Model {
         let owner = usersRepository.get(instance.OwnerId);
         instance.OwnerName = owner.Name;
         instance.OwnerAvatar = owner.Avatar;
+        
+        let likesRepository = new Repository(new LikeModel());
+        let likes = likesRepository.getAll({PhotoId: instance.Id});
+        instance.likes = likes;
         return instance;
     }
 }

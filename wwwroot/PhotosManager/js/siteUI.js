@@ -166,8 +166,10 @@ async function showMainPage()
                 <div class="photoImage" 
                 style="background-image:url('${picture.Image}')"></div>
                 <div class="photoTitleContainer">
-                <div class="photoDate">${toDate(picture.Date)}</div>
-            </div>
+                    <div class="photoDate">${toDate(picture.Date)}</div>
+                    <div>${picture.likes.length}</div>
+                    <div id="${picture.Id}" class=LikeCmd title="Ajouter une photo"><i  style="margin: unset;" class="cmdIcon fa-regular fa-thumbs-up"></i></div>
+                </div>
             </div>`;
         }
         content +=`</div>`;
@@ -579,28 +581,11 @@ function renderAdminMenu() {
                 <i class="menuIcon fa fa-image mx-2"></i> Liste des photos
             </span>
 
-            <div class="dropdown-divider"></div>
-            <span class="dropdown-item" id="sortByDateCmd">
-                <i class="menuIcon fa fa-check mx-2"></i>
-                <i class="menuIcon fa fa-calendar mx-2"></i>
-                Photos par date de création
-            </span>
-            <span class="dropdown-item" id="sortByOwnersCmd">
-                <i class="menuIcon fa fa-fw mx-2"></i>
-                <i class="menuIcon fa fa-users mx-2"></i>
-                Photos par créateur
-            </span>
-            <span class="dropdown-item" id="sortByLikesCmd">
-                <i class="menuIcon fa fa-fw mx-2"></i>
-                <i class="menuIcon fa fa-user mx-2"></i>
-                Photos les plus aiméés
-            </span>
-            <span class="dropdown-item" id="ownerOnlyCmd">
-                <i class="menuIcon fa fa-fw mx-2"></i>
-                <i class="menuIcon fa fa-user mx-2"></i>
-                Mes photos
-            </span>
-
+        `)
+    ); 
+    renderFilterMenu();
+    $("#contextualMenu").append(
+    $(`
             <div class="dropdown-divider"></div>
             <span class="dropdown-item" id="aboutCmd">
                 <i class="menuIcon fa fa-info-circle mx-2"></i> À propos...
