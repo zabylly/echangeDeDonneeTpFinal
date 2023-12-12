@@ -31,11 +31,10 @@ function AccountPicture(account) {
     <span class="UserName">${name}</span>`    
 }
 function AccountPicture(avatar, name) {
-    return `<span class="UserAvatar"
+    
+    return `<div class="UserAvatar"
     style="background-image:url('${avatar.slice(avatar.lastIndexOf("/") + 1) != "" ? avatar : 'images/no-avatar.png'}')"
-    title="${name}"></span>
-    <span class="UserContainer">
-    <span class="UserName">${name}</span>`    
+    title="${name}"></div>`    
 }
 async function GrantAdminAcess(profil) {
     if (isAdmin(API.retrieveLoggedUser())) {
