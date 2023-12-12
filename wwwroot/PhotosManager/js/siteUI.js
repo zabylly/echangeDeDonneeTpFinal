@@ -678,9 +678,19 @@ function updateHeader(headerName, menu) {
     }
     else if (isAdmin(user)) {
         renderAdminMenu();
+
+        $("#listPhotosCmd").on("click", () => {
+            if (API.retrieveLoggedUser() != null)
+                showMainPage();
+        });
     }
     else {
         renderUserMenu();
+
+        $("#listPhotosCmd").on("click", () => {
+            if (API.retrieveLoggedUser() != null)
+                showMainPage();
+        });
     }
     $("#newPhotoCmd").on("click", (e) => {
         showPictureForm();
@@ -898,6 +908,8 @@ function showPictureForm(picture = null)
     initFormValidation();
     initImageUploaders();
 
+    let original = picture;
+    
     $("#PictureForm").on("submit", async function(e) {
         let photo = getFormData($("#PictureForm"));
         e.preventDefault();
@@ -909,9 +921,9 @@ function showPictureForm(picture = null)
         }
         else {
 
-            photo.Id = picture.Id;
-            photo.OwnerId = picture.OwnerId;
-            photo.Date = picture.Date;
+            photo.Id = original.Id;
+            photo.OwnerId = original.OwnerId;
+            photo.Date = Date.now();
     
             //showWaitingGif();
     
@@ -943,12 +955,13 @@ function showConfirmDeletePicture(picture)
 
     eraseContent();
     $("#content").append($(`
-    <h3 style="
-    display: flex;
-    justify-content: center;" >Voulez-vous vraiment effacer cette photo?</h3>
-    <h5 class="photoTitle">${picture.Title}</h5>
-    <div class="photoImage"
-        style="background-image:url('${picture.Image}')">
+    <h3 style="display: flex; justify-content: center;" >Voulez-vous vraiment effacer cette photo?</h3>
+    <div class="photoLayout">
+        <div class="photoTitleContainer" style ="display: flex; justify-content: center;">
+            <div class="photoTitle">${picture.Title}</div>
+        </div>
+        <div class="photoImage" 
+        style="background-image:url('${picture.Image}'); margin:auto"></div>
     </div>
 
     <div class="cancel">
@@ -961,8 +974,10 @@ function showConfirmDeletePicture(picture)
     $('#abortCmd').on("click", function () {
         showMainPage();
     });
+
+    let original = picture;
     $('#confirmDeleteAccount').on("click",async function (){
-        let result = await API.unsubscribeAccount(API.retrieveLoggedUser().Id);
+        let result = await API.DeletePhoto(original.Id);
         console.log(result);
         if(result)
         {
@@ -997,8 +1012,8 @@ function renderAbout() {
                     Auteur: Nicolas Chourot
                 </p>
                 <p>
-                    Collège Lionel-Groulx, automne 2023
-                </p>
+                   Collège Lionel-Groulx, automne 2023
+                 </p>
             </div>
         `))
 }
