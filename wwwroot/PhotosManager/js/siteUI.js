@@ -672,9 +672,19 @@ function updateHeader(headerName, menu) {
     }
     else if (isAdmin(user)) {
         renderAdminMenu();
+
+        $("#listPhotosCmd").on("click", () => {
+            if (API.retrieveLoggedUser() != null)
+                showMainPage();
+        });
     }
     else {
         renderUserMenu();
+
+        $("#listPhotosCmd").on("click", () => {
+            if (API.retrieveLoggedUser() != null)
+                showMainPage();
+        });
     }
     $("#newPhotoCmd").on("click", (e) => {
         showPictureForm();
@@ -939,12 +949,13 @@ function showConfirmDeletePicture(picture)
 
     eraseContent();
     $("#content").append($(`
-    <h3 style="
-    display: flex;
-    justify-content: center;" >Voulez-vous vraiment effacer cette photo?</h3>
-    <h5 class="photoTitle">${picture.Title}</h5>
-    <div class="photoImage"
-        style="background-image:url('${picture.Image}')">
+    <h3 style="display: flex; justify-content: center;" >Voulez-vous vraiment effacer cette photo?</h3>
+    <div class="photoLayout">
+        <div class="photoTitleContainer" style ="display: flex; justify-content: center;">
+            <div class="photoTitle">${picture.Title}</div>
+        </div>
+        <div class="photoImage" 
+        style="background-image:url('${picture.Image}'); margin:auto"></div>
     </div>
 
     <div class="cancel">
@@ -995,8 +1006,8 @@ function renderAbout() {
                     Auteur: Nicolas Chourot
                 </p>
                 <p>
-                    Collège Lionel-Groulx, automne 2023
-                </p>
+                   Collège Lionel-Groulx, automne 2023
+                 </p>
             </div>
         `))
 }
