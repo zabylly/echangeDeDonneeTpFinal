@@ -1048,7 +1048,7 @@ function showConfirmDeletePicture(picture)
 }
 
 async function showPictureDetails(picture) {
-    timeout();
+    startCountdown();
     updateHeader("Détails", "pictureDetails")
     eraseContent();
 
@@ -1057,6 +1057,25 @@ async function showPictureDetails(picture) {
     let name = owner.Name;
 
     //mettre photoDetailsLargeImage
+
+    $("#content").append($(`
+        <div class="photoDetailsOwner">${AccountPicture(owner.Avatar, name, "UserAvatarSmall")}
+            <span>${name}</span>
+        </div>
+        <hr>
+        <div class="photoLayout">
+            <div class="photoDetailsTitle">${picture.Title}</div>
+            <div class="photoDetailsLargeImage" style="background-image:url('${picture.Image}');"></div>
+            <div class="photoTitleContainer">
+                <div class="photoDate">${toDate(picture.Date)}</div>
+                ${generateLike(picture)}
+                <div class="photoDetailsDescription">${picture.Description}</div>
+            </div>
+        </div>
+        `));
+
+
+    /*
     $("#content").append($(`
     <div style="display:flex;">${AccountPicture(owner.Avatar, name, "UserAvatarSmall")}
     <span style="margin-top:15px;">${name}</span></div>
@@ -1067,7 +1086,7 @@ async function showPictureDetails(picture) {
         </div>
         <div class="photoImage" 
         style="background-image:url('${picture.Image}');"></div>
-    </div>`));
+    </div>`));*/
 }
 
 function renderAbout() {
