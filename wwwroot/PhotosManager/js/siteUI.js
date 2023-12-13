@@ -169,7 +169,7 @@ async function showPictures(refresh = false)
                     ${isOwner?`<div><i id="${picture.Id}" class="cmdIcon fa fa-trash deletePicture" ></i></div>
                     <div><i id="${picture.Id}" class="cmdIcon fa fa-edit editPicture"></i></div>`:""}
                 </div>
-                <div class="photoImage" 
+                <div id="${picture.Id}" class="photoImage" 
                 style="background-image:url('${picture.Image}')"></div>
                 <div class="photoTitleContainer">
                     <div class="photoDate">${toDate(picture.Date)}</div>
@@ -178,10 +178,15 @@ async function showPictures(refresh = false)
             </div>`;
         }
         $("#pictures").append($(content));
-        $(`.deletePicture`).on("click", async function(e) {
+        $(`.photoImage`).on("click", async function(e) {
             let picture = await API.GetPhotosById($(e.target)[0].id);
 
+            showPictureDetails(picture);
+        });
+        $(`.deletePicture`).on("click", async function(e) {
+            let picture = await API.GetPhotosById($(e.target)[0].id);
             let user = API.retrieveLoggedUser();
+
             if (picture.OwnerId == user.Id || isAdmin(user)) {
                 showConfirmDeletePicture(picture);
             }
@@ -190,8 +195,8 @@ async function showPictures(refresh = false)
         $(`.editPicture`).on("click", async function(e) {
             saveContentScrollPosition();
             let picture = await API.GetPhotosById($(e.target)[0].id);
-
             let user = API.retrieveLoggedUser();
+
             if (picture.OwnerId == user.Id || isAdmin(user)) {
                 console.log("test");
                 showPictureForm(picture);
@@ -1001,8 +1006,8 @@ function showConfirmDeletePicture(picture)
 {
     startCountdown(); 
     updateHeader("Retrait de photo", "deletePicture");
-
     eraseContent();
+
     $("#content").append($(`
     <h3 style="display: flex; justify-content: center;" >Voulez-vous vraiment effacer cette photo?</h3>
     <div class="photoLayout">
@@ -1040,6 +1045,29 @@ function showConfirmDeletePicture(picture)
 
     });
 
+}
+
+async function showPictureDetails(picture) {
+    timeout();
+    updateHeader("Détails", "pictureDetails")
+    eraseContent();
+
+    let owner = Object.entries(await API.GetAccountById(picture.OwnerId))[0][1];
+
+    let name = owner.Name;
+
+    //mettre photoDetailsLargeImage
+    $("#content").append($(`
+    <div style="display:flex;">${AccountPicture(owner.Avatar, name, "UserAvatarSmall")}
+    <span style="margin-top:15px;">${name}</span></div>
+    <hr>
+    <div class="photoLayout">
+        <div class="photoTitleContainer" style ="display: flex;">
+            <span class="photoDetailsTitle">${picture.Title}</span>
+        </div>
+        <div class="photoImage" 
+        style="background-image:url('${picture.Image}');"></div>
+    </div>`));
 }
 
 function renderAbout() {

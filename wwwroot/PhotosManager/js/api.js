@@ -46,6 +46,10 @@ class API {
     static getBearerAuthorizationToken() {
         return { 'Authorization': 'Bearer ' + API.retrieveAccessToken() };
     }
+
+    static getBearerReadOnlyAuthorizationToken() {
+        return { 'Authorization': 'Bearer ' + "b991c3849f786784d8f6fd6392ca8e079780ce6678c0e30ab18e988a7f35322c" };
+    }
     static checkConflictURL() {
         return serverHost + "/accounts/conflict";
     }
@@ -166,6 +170,7 @@ class API {
     }
     static GetAccounts() {
         API.initHttpState();
+
         return new Promise(resolve => {
             $.ajax({
                 url: serverHost + "/accounts",
@@ -179,6 +184,27 @@ class API {
                 error: xhr => { API.setHttpErrorState(xhr); resolve(false); }
             });
         });
+    }
+    static async GetAccountById(id) {
+        API.initHttpState();
+        let user = await new Promise(resolve => {
+            $.ajax({
+                url: serverHost + "/api/accounts/" + id,
+                contentType: 'application/json',
+                type: 'GET',
+                headers: API.getBearerReadOnlyAuthorizationToken(),
+                success: (data, status, xhr) => {
+                    let ETag = xhr.getResponseHeader("ETag");
+
+                    data = {Name:data.Name, Avatar:data.Avatar};
+
+                    resolve({ data, ETag });
+                },
+                error: xhr => { API.setHttpErrorState(xhr); resolve(false); }
+            });
+        });
+
+       return user;
     }
     static GetPhotosETag() {
         API.initHttpState();

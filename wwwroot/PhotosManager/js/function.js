@@ -25,14 +25,14 @@ function AccountPicture(account) {
     let avatar = account.Avatar;
     let name = account.Name;
     return `<span class="UserAvatar"
-    style="background-image:url('${avatar.slice(avatar.lastIndexOf("/") + 1) != "" ? avatar : 'images/no-avatar.png'}')"
+    style="background-image:url('${ avatar.slice(avatar.lastIndexOf("/") + 1) != "" ? avatar : 'images/no-avatar.png'}');"
     title="${name}"></span>
     <span class="UserContainer">
     <span class="UserName">${name}</span>`    
 }
-function AccountPicture(avatar, name) {
+function AccountPicture(avatar, name, pictureClass = "UserAvatar") {
     
-    return `<div class="UserAvatar"
+    return `<div class="${pictureClass}"
     style="background-image:url('${avatar.slice(avatar.lastIndexOf("/") + 1) != "" ? avatar : 'images/no-avatar.png'}')"
     title="${name}"></div>`    
 }
