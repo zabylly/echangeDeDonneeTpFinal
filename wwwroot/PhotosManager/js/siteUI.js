@@ -1,4 +1,7 @@
 let filter = "sortByDate";
+let limit = getLimit();
+let offset = 0;
+let endOfData = false;
 initTimeout(120,()=>{
     logout("Votre session est expirée. Veuillez vous reconnecter");
  });   
@@ -120,65 +123,61 @@ function showLoginForm(loginMessage = "",email = "",emailError="",passwordError 
         //updateHeader("Connecté", "connected");
     });
 }
-async function showMainPage()
+async function showPictures(refresh = false)
 {
-    let queryString = "";
-    let content = "";
-    startCountdown();    
-    eraseContent();
-    updateHeader("Liste des photos", "connected");
+    let pictures = [];
+    let imageCount = limit * (offset + 1);
+    let queryString = refresh ? "?limit=" + imageCount + "&offset=" : "?limit=" + limit + "&offset=" + offset;
+    let content ="";
     switch(filter)
     {
         case "sortByDate":
         {
-            queryString = "?sort=Date,desc";
+            queryString += "&sort=Date,desc";
             break;
         }
         case "sortByOwners":
         {
-            queryString = "?sort=OwnerId";
+            queryString += "&sort=OwnerId";
             break;
         }
         case "sortByLikes":
         {
+            queryString += "&sort=likeCount,desc";
             break;
         }
         case "ownerOnly":
         {
-            queryString = `?OwnerId=${API.retrieveLoggedUser().Id}`;
+            queryString += `&OwnerId=${API.retrieveLoggedUser().Id}`;
             break;
         }
     }
-    let pictures = Object.entries(await API.GetPhotos(queryString))[0][1];
-    if(pictures) {
-        content += `<div class="photosLayout">`;
+    if(!endOfData)
+        pictures = Object.entries(await API.GetPhotos(queryString))[0][1];
+    endOfData = pictures.length ==0;
+    if(!endOfData) {
         for (const picture of pictures)
         {
             isOwner = API.retrieveLoggedUser().Id == picture.OwnerId;
-            isLiked = picture.likes.some(obj => obj["UserId"] === API.retrieveLoggedUser().Id);
-            console.log(isLiked);
+            userLike = picture.likes.find(obj => obj["UserId"] === API.retrieveLoggedUser().Id);
+            likeId = userLike == undefined ?false:userLike.Id;
             content +=`
 
             <div class="photoLayout">
                 <div class="photoTitleContainer">
                     <div class="photoTitle">${picture.Title}</div>
-                    <div><i id="${picture.Id}" class="cmdIcon fa fa-trash deletePicture" ></i></div>
-                    <div><i id="${picture.Id}" class="cmdIcon fa fa-edit editPicture"></i></div>
+                    ${isOwner?`<div><i id="${picture.Id}" class="cmdIcon fa fa-trash deletePicture" ></i></div>
+                    <div><i id="${picture.Id}" class="cmdIcon fa fa-edit editPicture"></i></div>`:""}
                 </div>
                 <div class="photoImage" 
                 style="background-image:url('${picture.Image}')"></div>
                 <div class="photoTitleContainer">
                     <div class="photoDate">${toDate(picture.Date)}</div>
-                    <div>${picture.likes.length}</div>
-                    <div idPicture="${picture.Id}" class="${isLiked?'UnlikeCmd':'LikeCmd'}" title="Ajouter une photo">
-                        <i style="margin: unset;" class="cmdIcon "${isLiked?'fa fa-thumbs-up':'fa-regular fa-thumbs-up'}"></i>
-                    </div>
+                    ${generateLike(picture)}
                 </div>
             </div>`;
         }
-        content +=`</div>`;
-        $("#content").append($(content));
-
+        $("#pictures").append($(content));
         $(`.deletePicture`).on("click", async function(e) {
             let picture = await API.GetPhotosById($(e.target)[0].id);
 
@@ -189,6 +188,7 @@ async function showMainPage()
         });
 
         $(`.editPicture`).on("click", async function(e) {
+            saveContentScrollPosition();
             let picture = await API.GetPhotosById($(e.target)[0].id);
 
             let user = API.retrieveLoggedUser();
@@ -197,17 +197,43 @@ async function showMainPage()
                 showPictureForm(picture);
             }
         });
-        $(`.LikeCmd`).click(function() {
+        $(`.LikeCmd`).click(async function() {
+            saveContentScrollPosition();
             let idPicture= $(this).attr('idPicture');
-            API.CreateLike({PhotoId: idPicture,UserId: API.retrieveLoggedUser().Id});
+            await API.CreateLike({PhotoId: idPicture,UserId: API.retrieveLoggedUser().Id});
             showMainPage();
         });
-
+        $(`.UnlikeCmd`).click(async function() {
+            saveContentScrollPosition();
+            let idPicture= $(this).attr('idPicture');
+            console.log(idPicture);         
+            await API.DeleteLike(idPicture);
+            showMainPage();
+        });
+        $("#content").on("scroll", function () {
+            if ($("#content").scrollTop() + $("#content").innerHeight() > ($("#pictures").height() - rowHeight)) {
+                offset++;
+                console.log(offset);
+                showPictures();
+            }
+        });
     }
-    else if (API.currentStatus == 0) {
-        showOffline();
+    else
+    {
+        $("#content").off();
     }
+}
+async function showMainPage()
+{
 
+    startCountdown();    
+    eraseContent();
+    $("#content").append($(`<div id="pictures" class="photosLayout"></div>`));
+    endOfData = false;
+    await showPictures(true);
+    restoreContentScrollPosition();
+    updateHeader("Liste des photos", "connected");
+    
 }
 
 
@@ -482,9 +508,11 @@ function eraseContent() {
 }
 function saveContentScrollPosition() {
     contentScrollPosition = $("#content")[0].scrollTop;
+    console.log('saved');
 }
 function restoreContentScrollPosition() {
     $("#content")[0].scrollTop = contentScrollPosition;
+    console.log('restored');
 }
 function renderAnonymousMenu() {
     $("#contextualMenu").empty();
@@ -510,7 +538,6 @@ function renderAnonymousMenu() {
 }
 function renderFilterMenu()
 {
-    console.log(filter);
     $("#contextualMenu").append(
         $(`
             <div class="dropdown-divider"></div>
@@ -542,6 +569,9 @@ function renderFilterMenu()
         `)
     );
     $('.filter').on("click",function(){
+        offset = 0;
+        contentScrollPosition = 0;
+        console.log("positonReset");
         filter = $(this).attr('id').replace("Cmd","");
         showMainPage();
     });
@@ -711,6 +741,7 @@ function updateHeader(headerName, menu) {
         });
     }
     $("#newPhotoCmd").on("click", (e) => {
+        saveContentScrollPosition();
         showPictureForm();
     });
 }

@@ -27,6 +27,7 @@ export default class Photo extends Model {
         let likesRepository = new Repository(new LikeModel());
         let likes = likesRepository.getAll({PhotoId: instance.Id});
         instance.likes = likes;
+        instance.likeCount = likes.length;
         return instance;
     }
 }

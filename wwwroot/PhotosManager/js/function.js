@@ -1,4 +1,4 @@
-
+let rowHeight = 345 - 1;
 function newAccount() {
     account = {};
     account.Id = 0;
@@ -74,4 +74,24 @@ function toDate(dateInt)
     let heure = dateObj.toLocaleTimeString("fr-FR",{ hour: '2-digit', minute: '2-digit', second: '2-digit' });
     return date + " @ " + heure;
 
+}
+function generateLike(picture)
+{
+    let title="";
+    for(const like of picture.likes)
+    {
+        title += like.UserName + "\n";
+    }
+    userLike = picture.likes.find(obj => obj["UserId"] === API.retrieveLoggedUser().Id);
+    likeId = userLike == undefined ?false:userLike.Id;
+    return `<div>${picture.likeCount}</div>
+    <div idPicture="${likeId?likeId:picture.Id}" class="${likeId?'UnlikeCmd':'LikeCmd'}" title="${title}">
+        <i style="margin: unset;" class="cmdIcon ${likeId?'fa fa-thumbs-up':'fa-regular fa-thumbs-up'}"></i>
+    </div>`;
+}
+function getLimit() {
+    let nbColumn = 3;
+    // estimate the value of limit according to height of content
+    let limit = Math.round($("#content").innerHeight() / rowHeight);
+    return limit * nbColumn;
 }
