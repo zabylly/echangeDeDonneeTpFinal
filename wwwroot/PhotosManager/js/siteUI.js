@@ -170,7 +170,8 @@ async function showPictures(refresh = false)
                     <div><i id="${picture.Id}" class="cmdIcon fa fa-edit editPicture"></i></div>`:""}
                 </div>
                 <div id="${picture.Id}" class="photoImage" 
-                style="background-image:url('${picture.Image}')"></div>
+                style="background-image:url('${picture.Image}')">${AccountPicture(picture.OwnerAvatar, picture.OwnerName)}
+                ${isOwner && picture.Shared ?AccountPicture("./images/shared.png", "shared"):""}</div>
                 <div class="photoTitleContainer">
                     <div class="photoDate">${toDate(picture.Date)}</div>
                     ${generateLike(picture)}
