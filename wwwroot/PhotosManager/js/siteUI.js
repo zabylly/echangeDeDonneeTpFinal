@@ -1063,9 +1063,9 @@ async function showPictureDetails(picture) {
             <span>${name}</span>
         </div>
         <hr>
-        <div class="photoLayout">
+        <div>
             <div class="photoDetailsTitle">${picture.Title}</div>
-            <div class="photoDetailsLargeImage" style="background-image:url('${picture.Image}');"></div>
+            <img class="photoDetailsLargeImage" src='${picture.Image}'></img>
             <div class="photoTitleContainer">
                 <div class="photoDate">${toDate(picture.Date)}</div>
                 ${generateLike(picture)}
