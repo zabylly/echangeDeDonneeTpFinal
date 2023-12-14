@@ -1051,9 +1051,10 @@ function showConfirmDeletePicture(picture)
 async function showPictureDetails(picture) {
     startCountdown();
     updateHeader("Détails", "pictureDetails")
-    eraseContent();
 
     let owner = Object.entries(await API.GetAccountById(picture.OwnerId))[0][1];
+
+    eraseContent();
 
     let name = owner.Name;
 
@@ -1067,27 +1068,28 @@ async function showPictureDetails(picture) {
         <div>
             <div class="photoDetailsTitle">${picture.Title}</div>
             <img class="photoDetailsLargeImage" src='${picture.Image}'></img>
-            <div class="photoTitleContainer">
-                <div class="photoDate">${toDate(picture.Date)}</div>
+            <div class="photoTitleContainer" style="grid-template-columns: 368px auto 25px 25px 20px;">
+                <div class="photoDetailsCreationDate">${toDate(picture.Date)}</div>
+                <span></span>
                 ${generateLike(picture)}
-                <div class="photoDetailsDescription">${picture.Description}</div>
             </div>
+            <div class="photoDetailsDescription">${picture.Description}</div>
         </div>
-        `));
+    `));
 
-
-    /*
-    $("#content").append($(`
-    <div style="display:flex;">${AccountPicture(owner.Avatar, name, "UserAvatarSmall")}
-    <span style="margin-top:15px;">${name}</span></div>
-    <hr>
-    <div class="photoLayout">
-        <div class="photoTitleContainer" style ="display: flex;">
-            <span class="photoDetailsTitle">${picture.Title}</span>
-        </div>
-        <div class="photoImage" 
-        style="background-image:url('${picture.Image}');"></div>
-    </div>`));*/
+    $(`.LikeCmd`).click(async function() {
+        saveContentScrollPosition();
+        let idPicture= $(this).attr('idPicture');
+        await API.CreateLike({PhotoId: idPicture,UserId: API.retrieveLoggedUser().Id});
+        showPictureDetails(await API.GetPhotosById(idPicture));
+    });
+    $(`.UnlikeCmd`).click(async function() {
+        saveContentScrollPosition();
+        let idPicture= $(this).attr('idPicture');
+        console.log(idPicture);         
+        await API.DeleteLike(idPicture);
+        showPictureDetails(await API.GetPhotosById(idPicture));
+    });
 }
 
 function renderAbout() {
