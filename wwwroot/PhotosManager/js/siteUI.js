@@ -179,13 +179,12 @@ async function showPictures(refresh = false)
             </div>`;
         }
         $("#pictures").append($(content));
-        $(`.photoImage`).on("click", async function(e) {
-            let picture = await API.GetPhotosById($(e.target)[0].id);
-
+        $(`.photoImage`).on("click", async function() {
+            let picture = await API.GetPhotosById($(this).attr("id"));
             showPictureDetails(picture);
         });
-        $(`.deletePicture`).on("click", async function(e) {
-            let picture = await API.GetPhotosById($(e.target)[0].id);
+        $(`.deletePicture`).on("click", async function() {
+            let picture = await API.GetPhotosById($(this).attr("id"));
             let user = API.retrieveLoggedUser();
 
             if (picture.OwnerId == user.Id || isAdmin(user)) {
@@ -193,13 +192,12 @@ async function showPictures(refresh = false)
             }
         });
 
-        $(`.editPicture`).on("click", async function(e) {
+        $(`.editPicture`).on("click", async function() {
             saveContentScrollPosition();
-            let picture = await API.GetPhotosById($(e.target)[0].id);
+            let picture = await API.GetPhotosById($(this).attr("id"));
             let user = API.retrieveLoggedUser();
 
             if (picture.OwnerId == user.Id || isAdmin(user)) {
-                console.log("test");
                 showPictureForm(picture);
             }
         });
@@ -978,7 +976,11 @@ function showPictureForm(picture = null)
 
             photo.Id = original.Id;
             photo.OwnerId = original.OwnerId;
-            photo.Date = Date.now();
+
+            if (create)
+                photo.Date = Date.now();
+            else
+                photo.Date = original.Date;
     
             //showWaitingGif();
     
