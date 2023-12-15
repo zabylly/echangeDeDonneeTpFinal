@@ -27,7 +27,7 @@ export default class permissionFilter {
             {
                 let token = this.HttpContext.req.headers["authorization"].replace('Bearer ', '');
                 token = TokenManager.find(token);
-                if(Authorizations.readGranted(this.HttpContext,Authorizations.admin))
+                if(token.User.Authorizations["readAccess"] == 2)
                 {
                     return this.collection;
                 }

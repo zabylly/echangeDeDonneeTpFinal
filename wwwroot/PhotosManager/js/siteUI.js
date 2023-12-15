@@ -129,6 +129,7 @@ async function showPictures(refresh = false)
     let imageCount = limit * (offset + 1);
     let queryString = refresh ? "?limit=" + imageCount + "&offset=" : "?limit=" + limit + "&offset=" + offset;
     let content ="";
+    admin = await isAdmin(API.retrieveLoggedUser());
     switch(filter)
     {
         case "sortByDate":
@@ -158,7 +159,7 @@ async function showPictures(refresh = false)
     if(!endOfData) {
         for (const picture of pictures)
         {
-            isOwner = API.retrieveLoggedUser().Id == picture.OwnerId;
+            isOwner = API.retrieveLoggedUser().Id == picture.OwnerId || admin;
             userLike = picture.likes.find(obj => obj["UserId"] === API.retrieveLoggedUser().Id);
             likeId = userLike == undefined ?false:userLike.Id;
             content +=`
