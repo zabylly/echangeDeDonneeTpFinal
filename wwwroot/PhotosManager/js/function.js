@@ -85,7 +85,7 @@ function generateLike(picture)
     userLike = picture.likes.find(obj => obj["UserId"] === API.retrieveLoggedUser().Id);
     likeId = userLike == undefined ?false:userLike.Id;
     return `<div>${picture.likeCount}</div>
-    <div idPicture="${likeId?likeId:picture.Id}" class="${likeId?'UnlikeCmd':'LikeCmd'}" title="${title}">
+    <div idLike="${likeId?likeId:"none"}" idPicture="${picture.Id}" class="${likeId?'UnlikeCmd':'LikeCmd'}" title="${title}">
         <i style="margin: unset;" class="cmdIcon ${likeId?'fa fa-thumbs-up':'fa-regular fa-thumbs-up'}"></i>
     </div>`;
 }

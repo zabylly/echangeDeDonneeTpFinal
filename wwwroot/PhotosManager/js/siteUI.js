@@ -209,9 +209,8 @@ async function showPictures(refresh = false)
         });
         $(`.UnlikeCmd`).click(async function() {
             saveContentScrollPosition();
-            let idPicture= $(this).attr('idPicture');
-            console.log(idPicture);         
-            await API.DeleteLike(idPicture);
+            let idLike = $(this).attr('idLike');  
+            await API.DeleteLike(idLike);       
             showMainPage();
         });
         $("#content").on("scroll", function () {
@@ -1080,16 +1079,14 @@ async function showPictureDetails(picture) {
     `));
 
     $(`.LikeCmd`).click(async function() {
-        saveContentScrollPosition();
         let idPicture= $(this).attr('idPicture');
         await API.CreateLike({PhotoId: idPicture,UserId: API.retrieveLoggedUser().Id});
         showPictureDetails(await API.GetPhotosById(idPicture));
     });
     $(`.UnlikeCmd`).click(async function() {
-        saveContentScrollPosition();
         let idPicture= $(this).attr('idPicture');
-        console.log(idPicture);         
-        await API.DeleteLike(idPicture);
+        let idLike = $(this).attr('idLike');  
+        await API.DeleteLike(idLike);
         showPictureDetails(await API.GetPhotosById(idPicture));
     });
 }
