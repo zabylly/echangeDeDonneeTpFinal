@@ -182,9 +182,9 @@ async function showPictures(refresh = false)
         }
         $("#pictures").append($(content));
         $(`.photoImage`).on("click", async function() {
-            //let picture = await API.GetPhotosById($(this).attr("id"));
-            queryString += `&Id=${$(this).attr("id")}`;
-            let picture = Object.entries(await API.GetPhotos(queryString))[0][1][0];
+            let picture = await API.GetPhotosById($(this).attr("id"));
+            //queryString += `&Id=${$(this).attr("id")}`;
+            //let picture = Object.entries(await API.GetPhotos(queryString))[0][1][0];
             saveContentScrollPosition();
             showPictureDetails(picture);
         });
