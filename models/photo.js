@@ -13,7 +13,7 @@ export default class Photo extends Model {
         this.addField('Date','integer');
         this.addField('Shared','boolean');
 
-        this.setKey("Title");
+        //this.setKey("Title");
     }
 
     bindExtraData(instance) {
