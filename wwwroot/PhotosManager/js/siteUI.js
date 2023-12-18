@@ -127,7 +127,7 @@ async function showPictures(refresh = false)
 {
     let pictures = [];
     let imageCount = limit * (offset + 1);
-    let queryString = refresh ? "?limit=" + 50 + "&offset=" : "?limit=" + 50 + "&offset=" + offset;
+    let queryString = refresh ? "?limit=" + imageCount + "&offset=" : "?limit=" + limit + "&offset=" + offset;
     let content ="";
     admin = await isAdmin(API.retrieveLoggedUser());
     switch(filter)
@@ -153,7 +153,7 @@ async function showPictures(refresh = false)
             break;
         }
     }
-    console.log(queryString);
+
     if(!endOfData)
         pictures = Object.entries(await API.GetPhotos(queryString))[0][1];
     endOfData = pictures.length ==0;
