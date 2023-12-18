@@ -182,6 +182,7 @@ async function showPictures(refresh = false)
         $("#pictures").append($(content));
         $(`.photoImage`).on("click", async function() {
             let picture = await API.GetPhotosById($(this).attr("id"));
+            saveContentScrollPosition();
             showPictureDetails(picture);
         });
         $(`.deletePicture`).on("click", async function() {
