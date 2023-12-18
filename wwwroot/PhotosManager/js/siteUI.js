@@ -1020,7 +1020,7 @@ function showConfirmDeletePicture(picture)
         <div class="photoImage" 
         style="background-image:url('${picture.Image}'); margin:auto"></div>
     </div>
-
+    <br>
     <div class="cancel">
         <button class="form-control btn btn-danger form-control" id="confirmDeleteAccount">Effacer la photo</button>
     </div>
